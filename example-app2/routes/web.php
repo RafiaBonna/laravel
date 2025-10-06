@@ -11,8 +11,8 @@ Route::get('/', function () {
     return view('home');
 });
 Route::get('/add-user', function () {
-    return view('user');
+    return view('pages.user');
 });
 Route::get('/manage-user', function () {
-    return view('manage-user');
+    return view('pages.manage-user');
 });

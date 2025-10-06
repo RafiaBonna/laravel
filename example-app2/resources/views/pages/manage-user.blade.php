@@ -1,3 +1,6 @@
+@extends('master')
+@section('content')
+<div>
 <table class="table">
   <thead>
     <tr>
@@ -28,3 +31,5 @@
     </tr>
   </tbody>
 </table>
+</div>
+@endsection
