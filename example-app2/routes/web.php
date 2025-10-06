@@ -1,13 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+Route::get('/master', function () {
+    return view('master');
+});
 Route::get('/welcome', function () {
     return view('welcome');
 });
 Route::get('/', function () {
     return view('home');
 });
-Route::get('/about', function () {
-    return view('about');
+Route::get('/add-user', function () {
+    return view('user');
+});
+Route::get('/manage-user', function () {
+    return view('manage-user');
 });
