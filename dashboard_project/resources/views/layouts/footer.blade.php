@@ -1,4 +1,4 @@
-<footer class="main-footer bg-primary text-white text-center py-3">
+<footer class="main-footer bg-light text-dark text-center py-3">
     <strong>Copyright &copy; 2014-{{ date('Y') }} <a href="https://adminlte.io" class="text-white">AdminLTE.io</a>.</strong>
     All rights reserved.
     <div class="float-right d-none d-sm-inline-block">

@@ -1,3 +1,6 @@
+@extends('master')
+
+@section('content')
 <!doctype html>
 <html lang="en">
   <head>
@@ -60,3 +63,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-H4v91GvF6mGqW1jB8y0vG5oF0aC3kFjKkG5i8l8l9mO7pI1sC5i9M7pA9oG6tQn5sK8" crossorigin="anonymous"></script>
     </body>
 </html>
+@endsection

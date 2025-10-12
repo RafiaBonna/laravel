@@ -13,13 +13,13 @@ class UserController extends Controller
      {
            $users = User::all();
             // dd($cats->toArray());
-            return view('pages.index',compact('users'));// compact() is used when you want to pass multiple variables to a view.
+            return view('pages.user.index',compact('users'));// compact() is used when you want to pass multiple variables to a view.
     }
 
 
        public function create()
     {
-        return view('pages.create');
+        return view('pages.user.create');
     }
 
     public function store(Request $request)
@@ -39,7 +39,7 @@ class UserController extends Controller
     public function update($user_id)
     {
         $users = User::find($user_id);
-        return view('pages.edit',compact('users'));
+        return view('pages.user.edit',compact('users'));
     }
 
 

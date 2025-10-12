@@ -1,3 +1,6 @@
+@extends('master')
+
+@section('content')
 <!doctype html>
 <html lang="en">
   <head>
@@ -14,16 +17,16 @@
       <div class="container">
         <form method="POST" action="{{ route('editStore') }}">
           @csrf
-            <input type="text" name="user_id" hidden value="{{ $user->id }}"> 
+            <input type="text" name="user_id" hidden value="{{ $users->id }}"> 
             
             <div class="mb-3">
               <label for="name" class="form-label">Name</label>
-              <input type="text" name="name" class="form-control"  required value="{{ $user->name }}"> 
+              <input type="text" name="name" class="form-control"  required value="{{ $users->name }}"> 
             </div>
             
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label> 
-                <input type="email" name="email" class="form-control"  required value="{{ $user->email }}"> 
+                <input type="email" name="email" class="form-control"  required value="{{ $users->email }}"> 
             </div>
             
             <div class="mb-3">
@@ -38,3 +41,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-H4v91GvF6mGqW1jB8y0vG5oF0aC3kFjKkG5i8l8l9mO7pI1sC5i9M7pA9oG6tQn5sK8" crossorigin="anonymous"></script>
     </body>
 </html>
+@endsection

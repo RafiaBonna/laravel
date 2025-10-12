@@ -6,13 +6,14 @@ use App\Http\Controllers\UserController; // Eita add kora holo
 Route::get('/welcome', function () {
     return view('welcome');
 });
-Route::get('/master', function () {
+Route::get('/', function () {
     return view('master');
 });
 
+
 // index function-ke shobcheye beshi use kora path-e rakha holo
 Route::get('/home', [UserController::class, 'index']); 
-Route::get('/', [UserController::class, 'index']); 
+Route::get('/index', [UserController::class, 'index']); 
 
 Route::get('create', [UserController::class, 'create'])->name('create');
 Route::post('store', [UserController::class, 'store'])->name('store');

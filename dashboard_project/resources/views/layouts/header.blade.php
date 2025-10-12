@@ -18,54 +18,7 @@
   <!-- JQVMap -->
   <link rel="stylesheet" href="{{asset('admin/plugins/jqvmap/jqvmap.min.css')}}">
   <!-- Theme style -->
-  <link rel="stylesheet" href="{{asset('admin/dist/css/adminlte.min.css')}}">
-  <style>
-
-    /* Navbar background primary color & text white */
-  .main-header.navbar {
-      background-color: #007bff !important; /* Primary color */
-      color: #ffffff !important;            /* Text white */
-  }
-
-  /* Navbar links & icons white */
-  .main-header .nav-link, 
-  .main-header .navbar-nav .nav-item .nav-link i,
-  .main-header .navbar-nav .nav-item .badge {
-      color: #ffffff !important;
-  }
-
-  /* Navbar search input background & text */
-  .main-header .form-control-navbar {
-      background-color: rgba(255, 255, 255, 0.2) !important;
-      color: #ffffff !important;
-  }
-
-  /* Navbar search button icon white */
-  .main-header .btn-navbar i {
-      color: #ffffff !important;
-  }
-    /* Sidebar-er Background Color */
-    .main-sidebar, .sidebar-dark .nav-sidebar > .nav-item > .nav-link.active, .sidebar-dark .nav-sidebar > .nav-item:hover > .nav-link {
-      background-color: #2dbde093 !important; 
-    }
-
-  
-    .main-sidebar .nav-link, .main-sidebar .user-panel > .info > a, .main-sidebar .brand-text, .main-sidebar .brand-link .image, .main-sidebar .nav-icon {
-      color: #FFFFFF !important;
-    }
-    
-    /* Search input box-er background transparent ebong text white korar jonne */
-    .sidebar-search .form-control-sidebar {
-        background-color: transparent !important;
-        color: #FFFFFF !important;
-    }
-
-    /* Sidebar-er brand link-er bottom border-ti halka kore dilam */
-    .brand-link {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-  </style>
+  <link rel="stylesheet" href="{{asset('admin/dist/css/adminlte.min.css')}}"> 
   <!-- overlayScrollbars -->
   <link rel="stylesheet" href="{{asset('admin/plugins/overlayScrollbars/css/OverlayScrollbars.min.css')}}">
   <!-- Daterange picker -->
