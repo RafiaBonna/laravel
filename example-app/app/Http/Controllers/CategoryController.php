@@ -6,51 +6,54 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
-class CategoryController extends Controller{
-
+class CategoryController extends Controller
+{
     public function index()
-     {
-           $cats = Category::all();
-            // dd($cats->toArray());
-            return view('index',compact('cats'));// compact() is used when you want to pass multiple variables to a view.
+    {
+        $cats = Category::all();
+        return view('index', compact('cats'));
     }
 
-
-       public function create()
+    public function create()
     {
         return view('create');
     }
 
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => 'required',
+            'brand' => 'required',
+            'value' => 'required',
+        ]);
 
-        Category::create($request->only([
-            'name',
-            'details',
-        ]));
-        // dd($request->all());
-
-
-        return Redirect::to('/');
+        Category::create($request->only(['name', 'brand', 'value']));
+        return Redirect::route('category.index')->with('success', '✅ Category added successfully!');
     }
 
-    // public function update($catagory_id)
-    // {
-    //     $cat = Category::find($catagory_id);
-    //     return view('edit',compact('cat'));
-    // }
-    // public function editStore(Request $request)
-    // {
-    //    $cat = Category::find($request->catagory_id);
-    //     $cat->name = $request->name;
-    //     $cat->details = $request->details;
-    //     $cat->save();
-    //     return Redirect::to('/');
-    // }
+    public function edit($id)
+    {
+        $cat = Category::findOrFail($id);
+        return view('edit', compact('cat'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required',
+            'brand' => 'required',
+            'value' => 'required',
+        ]);
+
+        $cat = Category::findOrFail($id);
+        $cat->update($request->only(['name', 'brand', 'value']));
+        return Redirect::route('category.index')->with('success', '✏️ Category updated successfully!');
+    }
+
     public function destroy(Request $request)
     {
-        $student = Category::find($request->catagory_id);
-        $student->delete();
-        return Redirect::to('/');
+        $cat = Category::findOrFail($request->catagory_id);
+        $cat->delete();
+        return Redirect::route('category.index')->with('danger', '🗑️ Category deleted successfully!');
     }
 }
