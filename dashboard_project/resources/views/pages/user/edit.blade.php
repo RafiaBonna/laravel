@@ -34,6 +34,15 @@
                 <input type="password" name="password" class="form-control">
             </div>
 
+            <div class="mb-3">
+                <label for="role" class="form-label">Role</label>
+                <select name="role" id="role" class="form-control" required>
+                    <option value="depo" @if($users->role == 'depo') selected @endif>Depo</option>
+                    <option value="distributor" @if($users->role == 'distributor') selected @endif>Distributor</option>
+                    <option value="admin" @if($users->role == 'admin') selected @endif>Admin</option>
+                </select>
+            </div>
+
             <button type="submit" class="btn btn-primary">Submit</button>
           </form>
       </div>

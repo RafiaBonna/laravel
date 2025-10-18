@@ -39,6 +39,14 @@
                 <input type="text" name="password" class="form-control" required >
 
               </div>
+              <div class="mb-3">
+                <label for="role" class="form-label">Role</label>
+                <select name="role" id="role" class="form-control" required>
+                    <option value="depo" selected>Depo</option>
+                    <option value="distributor">Distributor</option>
+                    <option value="admin">Admin</option>
+                </select>
+              </div>
             <button type="submit" class="btn btn-primary">Submit</button>
           </form>
       </div>
