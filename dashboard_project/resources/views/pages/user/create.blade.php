@@ -1,56 +1,53 @@
 @extends('master')
 
 @section('content')
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<section class="content">
+    <div class="container-fluid">
+        <div class="text-center mt-3">
+            <h1>Create New User</h1>
+        </div>
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
- <title>Laravel CRUD</title>
-  </head>
-  <body>
-      <div class="text-center">
-
-        <p>Please Insert Users</p>
-
-      </div>
-
-      <div class="container">
-        <form method="POST" action="{{ route('store') }}">
-          @csrf
-            <div class="mb-3">
-              <label for="detailsa" class="form-label">Name</label>
-              <input type="text" name="name" class="form-control"  required>
-
-            </div>
-            
-            <div class="mb-3">
-                <label for="detailsa" class="form-label">Email</label>
-                <input type="email" name="email" class="form-control" required >
-
-              </div>
-              <div class="mb-3">
-                <label for="detailsa" class="form-label">Password</label>
-                <input type="text" name="password" class="form-control" required >
-
-              </div>
-              <div class="mb-3">
-                <label for="role" class="form-label">Role</label>
-                <select name="role" id="role" class="form-control" required>
-                    <option value="depo" selected>Depo</option>
-                    <option value="distributor">Distributor</option>
-                    <option value="admin">Admin</option>
-                </select>
-              </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-          </form>
-      </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  </body>
-</html>
+        <div class="container mt-5">
+            <form method="POST" action="{{ route('admin.users.store') }}">
+                @csrf
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">User Details</h3>
+                    </div>
+                    <div class="card-body">
+                        
+                        <div class="mb-3 form-group">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" name="name" class="form-control" id="name" required>
+                        </div>
+                        
+                        <div class="mb-3 form-group">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" id="email" required >
+                        </div>
+                        
+                        <div class="mb-3 form-group">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" id="password" required >
+                        </div>
+                        
+                        <div class="mb-3 form-group">
+                            <label for="role" class="form-label">Role</label>
+                            <select name="role" id="role" class="form-control" required>
+                                <option value="depo" selected>Depo</option>
+                                <option value="distributor">Distributor</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Create User</button>
+                        <a href="{{ route('admin.users.index') }}" class="btn btn-default float-right">Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
 @endsection

@@ -1,57 +1,69 @@
-// File: routes/web.php
 <?php
 
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth; // <--- Auth ব্যবহার করার জন্য এটি প্রয়োজন
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Auth; // Auth ইম্পোর্ট করা হলো
 
-// ১. পাবলিক রুট (লগইন করা না থাকলে এটি দেখাবে)
-Route::get('/', function () {
-    // যদি কেউ লগইন করে থাকে, তবে তাকে তার রোল অনুযায়ী ড্যাশবোর্ডে পাঠানো হবে
-    if (Auth::check()) {
-        // Auth::user()->getDashboardRoute() ফাংশনটি User.php মডেলে সেট করা আছে
-        return redirect(Auth::user()->getDashboardRoute());
-    }
-    // লগইন করা না থাকলে, welcome.blade.php দেখাবে
+// Auth Routes: এই একটি লাইন সব login, logout, register, password reset রুট তৈরি করে দেয়।
+Auth::routes(); 
+
+// welcome.blade.php
+Route::get('/welcome', function () {
     return view('welcome');
+});
+
+// Default root page
+Route::get('/', function () {
+    return view('master');
+});
+
+
+// /home রুটে গেলে ইউজারকে তার রোল অনুযায়ী ড্যাশবোর্ডে পাঠিয়ে দেবে (যদি লগইন করা থাকে)
+Route::get('/home', function () {
+    if (Auth::check()) {
+        // User.php এ নতুন ফাংশন ব্যবহার করে রোল অনুযায়ী ড্যাশবোর্ড ঠিক করা
+        return redirect(Auth::user()->getDashboardRoute()); 
+    }
+    // যদি লগইন না করা থাকে, লগইন পেজে রিডাইরেক্ট করবে
+    return redirect()->route('login');
 })->name('home');
 
 
-// ২. রোল-ভিত্তিক ড্যাশবোর্ড এবং Admin Panel Routes
-// সব রুটকে 'auth' middleware এর মধ্যে রাখা হলো
-Route::middleware(['auth'])->group(function () {
+/*
+|--------------------------------------------------------------------------
+| Admin Role Protected Routes
+|--------------------------------------------------------------------------
+| ইউজার CRUD রাউটগুলো 'admin' প্রিফিক্স ও 'admin' রোল মিডলওয়্যারের মাধ্যমে সুরক্ষিত করা হলো।
+*/
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     
-    // ----------------------------------------
-    // A. ADMIN PANEL ROUTES
-    // 'admin' middleware দিয়ে User Management সহ সব Admin কাজ সুরক্ষিত
-    // ----------------------------------------
-    Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function () {
-        
-        // Admin Dashboard
-        Route::get('/dashboard', [DashboardController::class, 'adminIndex'])->name('dashboard');
-        
-        // User Management Routes
-        Route::get('/users', [UserController::class, 'index'])->name('users.index');
-        Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-        Route::post('/users/store', [UserController::class, 'store'])->name('users.store');
-        Route::get('/users/edit/{user_id}', [UserController::class, 'update'])->name('users.edit');
-        Route::post('/users/edit/store', [UserController::class, 'editStore'])->name('users.editStore');
-        Route::post('/users/delete', [UserController::class, 'destroy'])->name('users.delete');
+    // Admin Dashboard
+    Route::get('/dashboard', function () {
+        return view('admin_index');
+    })->name('admin.dashboard');
+
+    // ইউজার ম্যানেজমেন্ট রুট (UserController)
+    Route::prefix('users')->name('admin.users.')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('index');             
+        Route::get('/create', [UserController::class, 'create'])->name('create');       
+        Route::post('/store', [UserController::class, 'store'])->name('store');         
+        Route::get('/edit/{user_id}', [UserController::class, 'update'])->name('edit'); 
+        Route::post('/edit-store', [UserController::class, 'editStore'])->name('editStore'); 
+        Route::delete('/delete', [UserController::class, 'destroy'])->name('delete');   
     });
-
-    // ----------------------------------------
-    // B. DISTRIBUTOR & DEPO DASHBOARD ROUTES
-    // ----------------------------------------
-
-    // Distributor Dashboard Route
-    Route::get('/distributor/dashboard', [DashboardController::class, 'distributorIndex'])->name('distributor.dashboard');
-    
-    // Depo Dashboard Route
-    Route::get('/depo/dashboard', [DashboardController::class, 'depoIndex'])->name('depo.dashboard');
-
 });
 
-// --- আপনার পুরোনো রুটগুলো এখন দরকার নেই, কারণ সব /admin/users এ গ্রুপ করা হয়েছে ---
-// যেমন: Route::get('create', [UserController::class, 'create'])->name('create');
-// এখন হবে: route('admin.users.create')
+
+// Distributor Dashboard (উদাহরণ)
+Route::middleware(['auth', 'role:distributor'])->prefix('distributor')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('master'); // ডিস্ট্রিবিউটর ভিউ
+    })->name('distributor.dashboard');
+});
+
+// Depo Dashboard (উদাহরণ)
+Route::middleware(['auth', 'role:depo'])->prefix('depo')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('master'); // ডিপো ভিউ
+    })->name('depo.dashboard');
+});

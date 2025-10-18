@@ -14,7 +14,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role', // <--- এই লাইনটি যোগ করা হয়েছে
+        'role', // role fillable করা হলো
     ];
 
     protected $hidden = [
@@ -29,21 +29,22 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-
-    // --- রোল-ভিত্তিক ড্যাশবোর্ড রুট ফাংশন যোগ করা হলো ---
+    
+    /**
+     * লগইন করার পরে ইউজারকে তার রোল অনুযায়ী ড্যাশবোর্ডের রুটে পাঠাবে।
+     */
     public function getDashboardRoute()
     {
+        // নিশ্চিত করুন web.php-এ এই route name গুলি আছে
         switch ($this->role) {
             case 'admin':
-                // পরবর্তীতে এই route গুলো routes/web.php এ সেট করব
                 return route('admin.dashboard'); 
             case 'distributor':
                 return route('distributor.dashboard');
             case 'depo':
                 return route('depo.dashboard');
             default:
-                return '/'; // যদি রোল না থাকে তবে হোমপেজ
+                return '/'; 
         }
     }
-    // ----------------------------------------------------
 }
