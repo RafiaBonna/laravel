@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HasOneThroughController;
 Route::get('/master', function () {
     return view('master');
 });
@@ -16,3 +17,4 @@ Route::get('/add-user', function () {
 Route::get('/manage-user', function () {
     return view('pages.manage-user');
 });
+Route::get('/a', [HasOneThroughController::class,'index']);
