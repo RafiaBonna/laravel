@@ -5,7 +5,7 @@
     <div class="d-flex justify-content-center">
       <form method="POST" action="{{ route('supplier.store') }}" class="w-100" style="max-width: 500px;">
         @csrf
-        <h1 class="text-center mb-4">Add Supplier</h1>
+        <h1 class="text-center mb-4">Add supplier</h1>
 
         <div class="mb-3">
           <label class="form-label">Name</label>
