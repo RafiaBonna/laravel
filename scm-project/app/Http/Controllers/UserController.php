@@ -39,7 +39,7 @@ class UserController extends Controller
         ]);
 
         // Redirect back to the users list
-        return Redirect::route('user.view');
+        return Redirect::route('user.index');
     }
 
     // ✅ Delete a user (route: DELETE /delete)

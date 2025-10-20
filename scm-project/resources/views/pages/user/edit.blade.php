@@ -10,21 +10,21 @@
           @csrf
           <h1 class="text-center mb-4">Update Users</h1>
 
-          <input type="text" name="user_id" class="form-control" hidden value="{{$u->id}}">
+          <input type="text" name="user_id" class="form-control" hidden value="{{$user->id}}">
 
           <div class="mb-3">
             <label class="form-label">Name</label>
-            <input type="text" name="name" class="form-control" required value="{{$u->name}}">
+            <input type="text" name="name" class="form-control" required value="{{$user->name}}">
           </div>
 
           <div class="mb-3">
             <label class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" required value="{{$u->email}}">
+            <input type="email" name="email" class="form-control" required value="{{$user->email}}">
           </div>
 
           <div class="mb-3">
             <label class="form-label">Password</label>
-            <input type="number" name="password" class="form-control" required value="{{$u->password}}">
+            <input type="password" name="password" class="form-control" required value="{{$user->password}}">
           </div>
 
           <div class="text-center">
