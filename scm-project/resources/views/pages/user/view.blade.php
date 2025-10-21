@@ -36,25 +36,26 @@
               <td>{{ $u->email }}</td>
               <td>{{ $u->password }}</td>
               <td>
-                {{-- ✅ FIXED: d-flex ব্যবহার করে বাটনগুলির বিন্যাস ঠিক করা হলো --}}
+                {{-- ✅ ফিক্সড: inline style ব্যবহার করে ব্যবধান নিশ্চিত করা হলো --}}
                 <div class="d-flex">
-                  {{-- 1. Edit Button --}}
-                  {{-- <a> ট্যাগকেই বাটন হিসেবে ব্যবহার করা হলো, এবং me-1 দিয়ে spacing যোগ করা হলো --}}
+                  
+                  {{-- 1. Edit Button: inline style (margin-right: 10px) ব্যবহার করে ব্যবধান নিশ্চিত করা হলো --}}
                   <a href="{{ route('userEdit', $u->id) }}" 
-                     class="btn btn-sm btn-success p-1 me-1" 
-                     title="Edit User">
-                    <i class="bi bi-pencil-square"></i>
+                     class="btn btn-sm btn-primary" 
+                     style="margin-right: 10px;" {{-- <-- এই লাইনটি মার্জিন নিশ্চিত করবে --}}
+                     title="Edit User: {{ $u->name }}">
+                    <i class="fas fa-edit"></i> {{-- Font Awesome Pencil Icon --}}
                   </a>
 
-                  {{-- 2. Delete Button --}}
-                  {{-- ✅ FIXED: onsubmit এ JavaScript confirm যোগ করা হলো --}}
+                  {{-- 2. Delete Button: লাল রঙের ছোট বাটন (btn-danger) --}}
                   <form action="{{ route('delete') }}" method="POST"
                     onsubmit="return confirm('আপনি কি নিশ্চিত যে আপনি এই ব্যবহারকারীকে ({{ $u->name }}) মুছে ফেলতে চান?');">
                     @method('DELETE')
                     @csrf
                     <input type="hidden" name="user_id" value="{{ $u->id }}">
-                    <button type="submit" class="btn btn-sm btn-danger p-1" title="Delete User">
-                      <i class="bi bi-trash3-fill"></i>
+                    <button type="submit" class="btn btn-sm btn-danger"
+                      title="Delete User: {{ $u->name }}">
+                      <i class="fas fa-trash-alt"></i> {{-- Font Awesome Trash Icon --}}
                     </button>
                   </form>
                 </div>

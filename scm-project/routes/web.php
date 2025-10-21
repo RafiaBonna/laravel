@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\StockInController; // নতুন: Raw Material Receive-এর জন্য
-use App\Http\Controllers\RawMaterialController; // নতুন: Raw Material Master-এর জন্য
+use App\Http\Controllers\RawMaterialController; 
+use App\Http\Controllers\StockOutController;
 
 
 Route::get('/', function () {
@@ -54,4 +55,19 @@ Route::prefix('stock-in')->group(function () {
     Route::post('/store', [StockInController::class, 'store'])->name('stockin.store');
     Route::get('/list', [StockInController::class, 'index'])->name('stockin.index');
     Route::get('/invoice/{id}', [StockInController::class, 'invoice'])->name('stockin.invoice');
+});
+
+// ===================================
+// 5. Stock Out (✅ NEW MODULE)
+// ===================================
+
+Route::prefix('stock-out')->group(function () {
+    // ফর্ম দেখানোর রুট
+    Route::get('/create', [StockOutController::class, 'create'])->name('stockout.create');
+    // ফর্ম সাবমিট করে ডেটা সেভ করার রুট
+    Route::post('/store', [StockOutController::class, 'store'])->name('stockout.store');
+    // স্টক আউট ট্রানজ্যাকশনের তালিকা দেখার রুট
+    Route::get('/list', [StockOutController::class, 'index'])->name('stockout.index');
+    // ⭐ Invoice দেখার জন্য নতুন রুট
+    Route::get('/invoice/{id}', [StockOutController::class, 'invoice'])->name('stockout.invoice');
 });

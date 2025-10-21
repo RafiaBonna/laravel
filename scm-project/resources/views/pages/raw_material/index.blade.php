@@ -1,6 +1,7 @@
 @extends('master')
 @section('content')
 
+{{-- 🎯 Raw Material Add Button সহ Header Section --}}
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -8,6 +9,7 @@
                 <h1 class="m-0 text-dark">Raw Materials Master List</h1>
             </div>
             <div class="col-sm-6 text-right">
+                {{-- Add New Material Button (Linking to raw_material.create route) --}}
                 <a href="{{ route('raw_material.create') }}" class="btn btn-dark">
                     <i class="fas fa-plus"></i> Add New Material
                 </a>
@@ -40,45 +42,37 @@
                         <table id="example1" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th style="width: 5%">ID</th>
+                                    <th>ID</th>
                                     <th>Name</th>
                                     <th>Unit</th>
-                                    <th>Current Stock</th>
+                                    <th>Current Stock</th> {{-- নতুন যোগ করা হয়েছে --}}
                                     <th>Alert Stock</th>
-                                    <th style="width: 15%">Actions</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($materials as $material)
+                                {{-- $materials ভ্যারিয়েবলটি RawMaterialController থেকে আসা উচিত --}}
+                                @forelse ($materials as $material)
                                 <tr>
                                     <td>{{ $material->id }}</td>
                                     <td>{{ $material->name }}</td>
-                                    <td><span class="badge badge-info">{{ $material->unit }}</span></td>
-                                    
-                                    {{-- Stock Status with color --}}
-                                    <td>
-                                        @if($material->current_stock <= $material->alert_stock)
-                                            <span class="badge badge-danger">{{ $material->current_stock }}</span>
-                                        @else
-                                            <span class="badge badge-success">{{ $material->current_stock }}</span>
-                                        @endif
-                                    </td>
-                                    
+                                    <td>{{ $material->unit }}</td>
+                                    <td>{{ $material->current_stock }}</td> {{-- নতুন যোগ করা হয়েছে --}}
                                     <td>{{ $material->alert_stock }}</td>
-                                    
                                     <td>
-                                        <div class="btn-group btn-group-sm" role="group">
-                                            {{-- Edit Button --}}
-                                            <a href="{{ route('raw_material.edit', $material->id) }}" class="btn btn-info">
-                                                <i class="fas fa-edit"></i> Edit
+                                        <div class="d-flex align-items-center">
+                                            {{-- 1. Edit Button --}}
+                                            <a href="{{ route('raw_material.edit', $material->id) }}" class="btn btn-info btn-sm"
+                                                style="margin-right: 10px;">
+                                                <i class="fas fa-edit"></i>
                                             </a>
                                             
-                                            {{-- Delete Form --}}
+                                            {{-- 2. Delete Form --}}
                                             <form action="{{ route('raw_material.destroy', $material->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete {{ $material->name }}?')">
-                                                    <i class="fas fa-trash"></i> Delete
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete {{ $material->name }}?')">
+                                                    <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
                                         </div>
@@ -86,7 +80,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="6" class="text-center">No raw materials found.</td>
+                                    <td colspan="6" class="text-center">No raw materials found.</td> 
                                 </tr>
                                 @endforelse
                             </tbody>

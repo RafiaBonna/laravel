@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('master')
 
 @section('content')
 <h3>Receive Raw Material</h3>
@@ -10,7 +10,8 @@
         <select name="raw_material_id" class="form-control" required>
             <option value="">Select Material</option>
             @foreach($rawMaterials as $material)
-                <option value="{{ $material->id }}">{{ $material->name }} (Stock: {{ $material->current_stock }})</option>
+                {{-- ✅ RE-ADDED: Stock display --}}
+                <option value="{{ $material->id }}">{{ $material->name }} (Stock: {{ $material->current_stock }})</option> 
             @endforeach
         </select>
     </div>

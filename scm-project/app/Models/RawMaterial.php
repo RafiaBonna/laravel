@@ -14,7 +14,7 @@ class RawMaterial extends Model
     protected $fillable = [
         'name',
         'unit',
-        'current_stock',
+        'current_stock', // ✅ RE-ADDED
         'alert_stock',
     ];
 

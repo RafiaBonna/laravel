@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\RawMaterial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Validation\Rule; // ✅ Added to fix the unique validation error
+use Illuminate\Validation\Rule;
 
 class RawMaterialController extends Controller
 {
@@ -26,7 +26,7 @@ class RawMaterialController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            // ✅ FIX: Rule::unique ব্যবহার করা হয়েছে যেন Raw Material-এর নামে স্পেস থাকলেও ঠিকভাবে কাজ করে
+            // নিশ্চিত করা হলো যেন Raw Material-এর নাম ইউনিক থাকে
             'name' => [
                 'required',
                 'string',
@@ -41,7 +41,7 @@ class RawMaterialController extends Controller
             'name' => $request->name,
             'unit' => $request->unit,
             'alert_stock' => $request->alert_stock,
-            'current_stock' => 0,
+            // ✅ DELETED: current_stock ফিল্ডটি সম্পূর্ণভাবে মুছে ফেলা হয়েছে
         ]);
 
         return Redirect::route('raw_material.index')->with('success', 'Raw Material added successfully!');
@@ -58,7 +58,7 @@ class RawMaterialController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            // ✅ Update: edit-এর জন্যও Rule::unique ব্যবহার করা হয়েছে (ID ignore করে)
+            // ইউনিক ভ্যালিডেশন, বর্তমান ID বাদ দিয়ে
             'name' => [
                 'required',
                 'string',
@@ -71,7 +71,7 @@ class RawMaterialController extends Controller
 
         $material = RawMaterial::findOrFail($id);
         
-        // শুধু validated field গুলো update করা হলো
+        // শুধু validated field গুলো (name, unit, alert_stock) আপডেট করা হলো
         $material->update($request->only('name', 'unit', 'alert_stock'));
 
         return Redirect::route('raw_material.index')->with('success', 'Raw Material updated successfully!');
