@@ -1,7 +1,6 @@
 @extends('master')
 @section('content')
 
-{{-- Content Header (Page header) --}}
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -18,32 +17,22 @@
     </div>
 </div>
 
-{{-- Main content --}}
 <section class="content">
     <div class="container-fluid">
         <div class="row justify-content-center">
-            {{-- Screenshot-er moto centralize korte col-md-6 byabohar kora holo --}}
             <div class="col-md-6">
                 
                 {{-- Validation Error Message --}}
                 @if ($errors->any())
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <h5><i class="icon fas fa-ban"></i> Alert!</h5>
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                    <div class="alert alert-danger">
+                        Please correct the following errors:
                     </div>
                 @endif
                 
                 {{-- AdminLTE Card for the form --}}
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">Material Entry Form</h3>
+                        <h3 class="card-title">Material Details</h3>
                     </div>
                     
                     {{-- Form Start --}}
@@ -52,47 +41,43 @@
                         
                         <div class="card-body">
                             
-                            {{-- 1. Material Name Field --}}
+                            {{-- 1. Name Field --}}
                             <div class="form-group">
-                                <label for="name">Material Name <span class="text-danger">*</span></label>
+                                <label for="name">Material Name</label>
                                 <input 
                                     type="text" 
                                     name="name" 
                                     id="name" 
                                     class="form-control @error('name') is-invalid @enderror" 
                                     value="{{ old('name') }}" 
-                                    placeholder="Enter material name" 
+                                    placeholder="Enter material name (e.g., Cotton, Plastic Pellets)" 
                                     required
                                 >
                                 @error('name') 
-                                    <span class="text-danger text-sm">{{ $message }}</span> 
+                                    <span class="text-danger">{{ $message }}</span> 
                                 @enderror
                             </div>
-
+                            
                             {{-- 2. Unit Field --}}
                             <div class="form-group">
-                                <label for="unit">Unit of Measure <span class="text-danger">*</span></label>
-                                <select 
+                                <label for="unit">Unit (e.g., pcs, kg, meter)</label>
+                                <input 
+                                    type="text" 
                                     name="unit" 
                                     id="unit" 
                                     class="form-control @error('unit') is-invalid @enderror" 
+                                    value="{{ old('unit') }}" 
+                                    placeholder="Enter unit of measurement" 
                                     required
                                 >
-                                    <option value="">Select Unit</option>
-                                    <option value="PCS" {{ old('unit') == 'PCS' ? 'selected' : '' }}>PCS (Pieces)</option>
-                                    <option value="KG" {{ old('unit') == 'KG' ? 'selected' : '' }}>KG (Kilogram)</option>
-                                    <option value="LTR" {{ old('unit') == 'LTR' ? 'selected' : '' }}>LTR (Liter)</option>
-                                    <option value="MTR" {{ old('unit') == 'MTR' ? 'selected' : '' }}>MTR (Meter)</option>
-                                    <option value="BOX" {{ old('unit') == 'BOX' ? 'selected' : '' }}>BOX</option>
-                                </select>
                                 @error('unit') 
-                                    <span class="text-danger text-sm">{{ $message }}</span> 
+                                    <span class="text-danger">{{ $message }}</span> 
                                 @enderror
                             </div>
-
-                            {{-- 3. Alert Stock Quantity Field --}}
+                            
+                            {{-- 3. Alert Stock Field --}}
                             <div class="form-group">
-                                <label for="alert_stock">Alert Stock Quantity <span class="text-danger">*</span></label>
+                                <label for="alert_stock">Alert Stock Quantity</label>
                                 <input 
                                     type="number" 
                                     name="alert_stock" 
@@ -101,19 +86,11 @@
                                     value="{{ old('alert_stock', 10) }}" 
                                     required 
                                     min="0"
-                                    step="0.01"
                                 >
                                 @error('alert_stock') 
-                                    <span class="text-danger text-sm">{{ $message }}</span> 
+                                    <span class="text-danger">{{ $message }}</span> 
                                 @enderror
-                                <small class="form-text text-muted">Set the minimum stock level for alert notifications.</small>
-                            </div>
-                            
-                            {{-- 4. Current Stock (Read-only for info) --}}
-                            <div class="form-group">
-                                <label>Initial Current Stock</label>
-                                <input type="text" class="form-control bg-light" value="0.00" disabled>
-                                <small class="form-text text-muted">Stock will be updated in the **Product Received** section.</small>
+                                <small class="form-text text-muted">A notification will be shown when the stock falls below this quantity.</small>
                             </div>
                             
                         </div>

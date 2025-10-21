@@ -59,7 +59,12 @@
               <p>Raw Material</p>
             </a>
           </li>
-
+        <li class="nav-item">
+    <a class="nav-link" href="{{ route('stockin.create') }}">
+        <i class="nav-icon fas fa-box"></i>
+        <p>Stock In</p>
+    </a>
+</li>
           
         </ul>
       </nav>

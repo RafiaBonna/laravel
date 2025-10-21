@@ -34,7 +34,7 @@ Route::delete('/supplierDelete', [SupplierController::class, 'destroy'])->name('
 
 
 // ===================================
-// 3. Raw Material & Stock In Routes (New Module)
+// 3. Raw Material &  (New Module)
 // ===================================
 
 
@@ -44,3 +44,14 @@ Route::post('/raw-materials', [RawMaterialController::class, 'store'])->name('ra
 Route::get('/raw-materials/{id}/edit', [RawMaterialController::class, 'edit'])->name('raw_material.edit');
 Route::put('/raw-materials/{id}', [RawMaterialController::class, 'update'])->name('raw_material.update');
 Route::delete('/raw-materials/{id}', [RawMaterialController::class, 'destroy'])->name('raw_material.destroy');
+
+// ===================================
+// 4. Stock in (New Module)
+// ===================================
+
+Route::prefix('stock-in')->group(function () {
+    Route::get('/create', [StockInController::class, 'create'])->name('stockin.create');
+    Route::post('/store', [StockInController::class, 'store'])->name('stockin.store');
+    Route::get('/list', [StockInController::class, 'index'])->name('stockin.index');
+    Route::get('/invoice/{id}', [StockInController::class, 'invoice'])->name('stockin.invoice');
+});
