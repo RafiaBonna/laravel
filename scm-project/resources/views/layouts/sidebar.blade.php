@@ -28,8 +28,7 @@
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
-          {{-- 1. Dashboard --}}
-          {{-- AdminLTE standard: nav link must be inside li.nav-item --}}
+          {{-- 1. Dashboard (Icon KEPT as fas fa-tachometer-alt) --}}
           <li class="nav-item"> 
             <a href="/dash" class="nav-link">
               <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -37,32 +36,29 @@
             </a>
           </li>
 
-          {{-- 2. Users Management --}}
+          {{-- 2. Users Management (Icon changed to a Box icon) --}}
           <li class="nav-item">
-            {{-- User list page-এ পয়েন্ট করা হলো (route: user.index) --}}
             <a class="nav-link" href="{{ route('user.index') }}"> 
-              <i class="far fa-circle nav-icon"></i>
+              <i class="nav-icon fas fa-box"></i> 
               <p>Users Management</p>
             </a>
           </li>
 
-          {{-- 3. Supplier Management --}}
+          {{-- 3. Supplier (Icon changed to a Box icon) --}}
           <li class="nav-item">
-            {{-- Supplier list page-এ পয়েন্ট করা হলো (route: supplier.index) --}}
             <a class="nav-link" href="{{ route('supplier.index') }}">
-              <i class="far fa-circle nav-icon"></i>
+              <i class="nav-icon fas fa-box"></i> 
               <p>Supplier</p>
             </a>
           </li>
 
        <li class="nav-item">
-            {{-- Supplier list page-এ পয়েন্ট করা হলো (route: supplier.index) --}}
+            {{-- Raw Material (Icon changed to a Box icon) --}}
             <a class="nav-link" href="{{ route('raw_material.index') }}">
-              <i class="far fa-circle nav-icon"></i>
+              <i class="nav-icon fas fa-box"></i> 
               <p>Raw Material</p>
             </a>
           </li>
-
 
           
         </ul>

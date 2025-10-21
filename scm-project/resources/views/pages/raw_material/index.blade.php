@@ -8,7 +8,7 @@
                 <h1 class="m-0 text-dark">Raw Materials Master List</h1>
             </div>
             <div class="col-sm-6 text-right">
-                <a href="{{ route('raw_material.create') }}" class="btn btn-primary">
+                <a href="{{ route('raw_material.create') }}" class="btn btn-dark">
                     <i class="fas fa-plus"></i> Add New Material
                 </a>
             </div>

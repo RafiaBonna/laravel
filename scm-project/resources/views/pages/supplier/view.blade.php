@@ -8,7 +8,7 @@
       <div class="row align-items-center">
         <div class="col-lg-12 col-md-10 text-center">
           <h1 class="display-2 text-white text-center">Supplier List</h1>
-          <a href="{{ route('supplier.create') }}" class="btn btn-info">Add Supplier</a>
+          <a href="{{ route('supplier.create') }}" class="btn btn-dark">Add Supplier</a>
         </div>
       </div>
     </div>
@@ -19,7 +19,7 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th scope="col">#</th>
+        <th scope="col">ID</th>
         <th scope="col">Name</th>
         <th scope="col">Email</th>
         <th scope="col">Phone</th>

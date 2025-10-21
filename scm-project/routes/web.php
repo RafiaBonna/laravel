@@ -8,7 +8,7 @@ use App\Http\Controllers\RawMaterialController; // নতুন: Raw Material Ma
 
 
 Route::get('/', function () {
-    return view('master');
+    return view('welcome');
 });
 
 // ===================================

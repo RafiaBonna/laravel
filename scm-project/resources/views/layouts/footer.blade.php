@@ -6,7 +6,20 @@
     </div>
 </footer>
 
-<!-- Control Sidebar -->
 <aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-</aside>
+    </aside>
+
+{{-- 🛑 IMPORTANT: Closing the main wrapper div opened in header.blade.php --}}
+</div> 
+{{-- 🛑 IMPORTANT: ADMINLTE CORE JAVASCRIPT PLUGINS --}}
+<script src="{{asset('admin/plugins/jquery/jquery.min.js')}}"></script>
+<script src="{{asset('admin/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+<script src="{{asset('admin/dist/js/adminlte.js')}}"></script>
+
+
+{{-- ✅ CRITICAL FIX: YIELD CUSTOM SCRIPTS HERE --}}
+{{-- This line is essential for loading Chart.js from welcome.blade.php --}}
+@yield('scripts')
+
+</body>
+</html>
