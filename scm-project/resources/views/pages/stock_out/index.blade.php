@@ -1,42 +1,46 @@
 @extends('master')
 
 @section('content')
-<h3>Stock Out List</h3>
+<h3>Stock Out List (Issued Materials)</h3>
 
-{{-- Success Handling --}}
-@if (session('success'))
+{{-- Success/Error Message --}}
+@if(session('success'))
     <div class="alert alert-success">{{ session('success') }}</div>
 @endif
 
-<table class="table table-bordered">
+<table class="table table-bordered table-striped">
     <thead>
         <tr>
             <th>ID</th>
             <th>Material</th>
+            <th>Destination (Depot)</th>
             <th>Quantity</th>
             <th>Unit</th>
-            <th>Issued By</th>
+            {{-- <th>Cost Price</th> --}}
             <th>Date</th>
             <th>Action</th>
         </tr>
     </thead>
     <tbody>
-        @foreach($stockOuts as $stock)
+        @forelse($stockOuts as $stock)
         <tr>
             <td>{{ $stock->id }}</td>
-            <td>{{ $stock->rawMaterial->name ?? 'N/A' }}</td>
-            <td>{{ number_format($stock->issued_quantity, 2) }}</td>
-            <td>{{ $stock->unit ?? 'N/A' }}</td>
-            <td>{{ $stock->issuer->name ?? 'User Deleted' }}</td>
-            <td>{{ \Carbon\Carbon::parse($stock->issue_date)->format('d M Y') }}</td>
+            <td>{{ $stock->rawMaterial->name }}</td>
+            <td>{{ $stock->depot->name ?? 'N/A' }}</td> {{-- Depot নাম --}}
+            <td>{{ $stock->issued_quantity }}</td>
+            <td>{{ $stock->unit }}</td>
+            {{-- <td>{{ $stock->cost_price ?? 'N/A' }}</td> --}}
+            <td>{{ \Carbon\Carbon::parse($stock->issued_date)->format('d M Y') }}</td>
             <td>
-                {{-- ⭐ Invoice Button ⭐ --}}
-                <a href="{{ route('stockout.invoice', $stock->id) }}" class="btn btn-info btn-sm">
-                    <i class="fas fa-file-invoice"></i> View Invoice
-                </a>
+                {{-- View Invoice Button --}}
+                <a href="{{ route('stockout.invoice', $stock->id) }}" class="btn btn-info btn-sm">View Invoice</a>
             </td>
         </tr>
-        @endforeach
+        @empty
+        <tr>
+            <td colspan="7" class="text-center">No issued materials found.</td>
+        </tr>
+        @endforelse
     </tbody>
 </table>
 @endsection

@@ -6,6 +6,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\StockInController; // নতুন: Raw Material Receive-এর জন্য
 use App\Http\Controllers\RawMaterialController; 
 use App\Http\Controllers\StockOutController;
+use App\Http\Controllers\DepotController; // ✅ NEW: Depot Controller যোগ করা হলো
 
 
 Route::get('/', function () {
@@ -58,16 +59,23 @@ Route::prefix('stock-in')->group(function () {
 });
 
 // ===================================
-// 5. Stock Out (✅ NEW MODULE)
+// 5. Depot Management (New Module)
+// ===================================
+
+Route::get('/depots', [DepotController::class, 'index'])->name('depot.index');
+Route::get('/depots/create', [DepotController::class, 'create'])->name('depot.create');
+Route::post('/depots', [DepotController::class, 'store'])->name('depot.store');
+Route::get('/depots/{id}/edit', [DepotController::class, 'edit'])->name('depot.edit');
+Route::put('/depots/{id}', [DepotController::class, 'update'])->name('depot.update');
+Route::delete('/depots/{id}', [DepotController::class, 'destroy'])->name('depot.destroy');
+
+// ===================================
+// 6. Stock Out (New Module)
 // ===================================
 
 Route::prefix('stock-out')->group(function () {
-    // ফর্ম দেখানোর রুট
     Route::get('/create', [StockOutController::class, 'create'])->name('stockout.create');
-    // ফর্ম সাবমিট করে ডেটা সেভ করার রুট
     Route::post('/store', [StockOutController::class, 'store'])->name('stockout.store');
-    // স্টক আউট ট্রানজ্যাকশনের তালিকা দেখার রুট
     Route::get('/list', [StockOutController::class, 'index'])->name('stockout.index');
-    // ⭐ Invoice দেখার জন্য নতুন রুট
-    Route::get('/invoice/{id}', [StockOutController::class, 'invoice'])->name('stockout.invoice');
+    Route::get('/invoice/{id}', [StockOutController::class, 'invoice'])->name('stockout.invoice'); 
 });
