@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
-use Illuminate\Support\Facades\Auth; // Auth ইম্পোর্ট করা হলো
+use Illuminate\Support\Facades\Auth;
 
 // Auth Routes: এই একটি লাইন সব login, logout, register, password reset রুট তৈরি করে দেয়।
 Auth::routes(); 
@@ -22,6 +22,7 @@ Route::get('/', function () {
 Route::get('/home', function () {
     if (Auth::check()) {
         // User.php এ নতুন ফাংশন ব্যবহার করে রোল অনুযায়ী ড্যাশবোর্ড ঠিক করা
+        // এই রুটিংটি Auth::user()->getDashboardRoute() ফাংশনের উপর নির্ভর করে
         return redirect(Auth::user()->getDashboardRoute()); 
     }
     // যদি লগইন না করা থাকে, লগইন পেজে রিডাইরেক্ট করবে
@@ -33,9 +34,10 @@ Route::get('/home', function () {
 |--------------------------------------------------------------------------
 | Admin Role Protected Routes
 |--------------------------------------------------------------------------
-| ইউজার CRUD রাউটগুলো 'admin' প্রিফিক্স ও 'admin' রোল মিডলওয়্যারের মাধ্যমে সুরক্ষিত করা হলো।
+| ইউজার CRUD রাউটগুলো 'admin' প্রিফিক্স ও 'admin' মিডলওয়্যারের মাধ্যমে সুরক্ষিত করা হলো।
 */
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+// ✅ ফিক্স: 'role:admin' এর বদলে 'admin' মিডলওয়্যার অ্যালিয়াস ব্যবহার করা হলো
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     
     // Admin Dashboard
     Route::get('/dashboard', function () {
@@ -47,23 +49,33 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');             
         Route::get('/create', [UserController::class, 'create'])->name('create');       
         Route::post('/store', [UserController::class, 'store'])->name('store');         
-        Route::get('/edit/{user_id}', [UserController::class, 'update'])->name('edit'); 
+        // ✅ ফিক্স: UserController-এ update এর পরিবর্তে edit মেথডকে কল করা হলো
+        Route::get('/edit/{user_id}', [UserController::class, 'edit'])->name('edit'); 
         Route::post('/edit-store', [UserController::class, 'editStore'])->name('editStore'); 
         Route::delete('/delete', [UserController::class, 'destroy'])->name('delete');   
     });
 });
 
 
-// Distributor Dashboard (উদাহরণ)
-Route::middleware(['auth', 'role:distributor'])->prefix('distributor')->group(function () {
+/*
+|--------------------------------------------------------------------------
+| Other Role Specific Dashboard Routes
+|--------------------------------------------------------------------------
+| এই রুটগুলি লগইন করা সাপেক্ষে প্রত্যেকের ড্যাশবোর্ড প্রদর্শন করে।
+*/
+
+// Distributor Dashboard
+Route::middleware('auth')->prefix('distributor')->group(function () {
     Route::get('/dashboard', function () {
-        return view('master'); // ডিস্ট্রিবিউটর ভিউ
+        // 'distributor_index' ভিউ ফাইল লোড করবে
+        return view('distributor_index'); 
     })->name('distributor.dashboard');
 });
 
-// Depo Dashboard (উদাহরণ)
-Route::middleware(['auth', 'role:depo'])->prefix('depo')->group(function () {
+// Depo Dashboard
+Route::middleware('auth')->prefix('depo')->group(function () {
     Route::get('/dashboard', function () {
-        return view('master'); // ডিপো ভিউ
+        // 'depo_index' ভিউ ফাইল লোড করবে
+        return view('depo_index'); 
     })->name('depo.dashboard');
 });

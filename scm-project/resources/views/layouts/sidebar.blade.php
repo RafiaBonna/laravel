@@ -64,8 +64,20 @@
         <i class="nav-icon fas fa-box"></i>
         <p>Stock In</p>
     </a>
-</li>
-          
+    </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('depot.index') }}">
+              <i class="nav-icon fas fa-box"></i> {{-- Changed icon to a warehouse for depots --}}
+              <p>Depot Management</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('stockout.create') }}">
+              <i class="nav-icon fas fa-box"></i> {{-- Changed icon to a warehouse for depots --}}
+              <p>Stock Out</p>
+            </a>
+        </li>
         </ul>
       </nav>
       </div>

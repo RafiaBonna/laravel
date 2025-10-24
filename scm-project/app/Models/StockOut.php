@@ -1,5 +1,7 @@
 <?php
 
+// app/Models/StockOut.php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,28 +12,23 @@ class StockOut extends Model
     use HasFactory;
 
     protected $fillable = [
-        'raw_material_id',
-        'issued_by_user_id',
+        'raw_material_id', 
+        'depot_id', 
         'issued_quantity',
         'unit',
-        'purpose',
-        'issue_date',
+        'cost_price',
+        'issued_date',
     ];
 
-    /**
-     * Get the raw material that was issued.
-     */
+    // RawMaterial (Master) এর সাথে সম্পর্ক
     public function rawMaterial()
     {
-        return $this->belongsTo(RawMaterial::class, 'raw_material_id');
+        return $this->belongsTo(RawMaterial::class);
     }
 
-    /**
-     * Get the user/recipient who issued the stock.
-     */
-    public function issuer()
+    // Depot/Destination এর সাথে সম্পর্ক (যদি থাকে)
+    public function depot()
     {
-        // Assuming your user model is named 'User'
-        return $this->belongsTo(\App\Models\User::class, 'issued_by_user_id'); 
+        return $this->belongsTo(Depot::class); // Depot Model/Table নাম ব্যবহার করা হলো
     }
 }

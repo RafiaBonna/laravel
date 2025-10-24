@@ -35,7 +35,7 @@
                         <div class="col-sm-4 invoice-col">
                             To Warehouse
                             <address>
-                                <strong>Your Company Name</strong><br>
+                                <strong>SCM Company</strong><br>
                                 {{-- তোমার কোম্পানির ঠিকানা এখানে যোগ করো --}}
                                 [Warehouse Address]<br>
                                 [Phone/Contact Info]
