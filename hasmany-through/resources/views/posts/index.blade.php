@@ -65,7 +65,8 @@
     <hr class="my-5">
 
     <div class="my-4">
-        <h2 class="mb-4 text-secondary">All Posts (Has Many Through Demo)</h2>
+        <!--  Has Many Through Demo -->
+        <h2 class="mb-4 text-secondary">All Posts</h2> 
         
         @if (session('success'))
             <div class="alert alert-success">
