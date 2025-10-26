@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,3 +31,4 @@ Route::get('/view-enrollments', [EnrollmentController::class, 'getEnrollments'])
 // এই রুটটি StudentController থেকে সব Subject এবং তাদের এনরোল করা Student-দের তালিকা 
 // আপনার blade View (subject_list.blade.php)-তে টেবিল আকারে দেখাবে।
 Route::get('/subject-list', [StudentController::class, 'index']);
+Route::get('/category/{id}/first-order', [CategoryController::class, 'showFirstOrder']);
