@@ -7,5 +7,6 @@
 </head>
 <body>
     <h2>Multi Auth System</h2>
+    <h3>Admin</h3>
 </body>
 </html>
