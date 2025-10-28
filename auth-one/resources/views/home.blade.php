@@ -8,5 +8,6 @@
 <body>
     <h2>Multi Auth System</h2>
     <h3>Admin</h3>
+    <h3>Vendor</h3>
 </body>
 </html>
