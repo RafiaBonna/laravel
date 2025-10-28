@@ -1,9 +1,9 @@
 <footer class="main-footer bg-light text-dark text-center py-3">
-    <strong>Copyright &copy; 2014-{{ date('Y') }} <a href="https://adminlte.io" class="text-white">AdminLTE.io</a>.</strong>
-    All rights reserved.
-    <div class="float-right d-none d-sm-inline-block">
+    <strong>Copyright &copy; 2014-{{ date('Y') }} </strong> <br>
+    All rights reserved by Rafia Hawlader.
+    <!-- <div class="float-right d-none d-sm-inline-block">
         <b>Version</b> 3.2.0
-    </div>
+    </div> -->
 </footer>
 
 <aside class="control-sidebar control-sidebar-dark">
