@@ -6,6 +6,6 @@
     <title>Document</title>
 </head>
 <body>
-    
+    <h2>Multi Auth System</h2>
 </body>
 </html>
