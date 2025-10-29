@@ -6,6 +6,6 @@
     <title>Document</title>
 </head>
 <body>
-    <h2>Student list</h2>
+    <h2>Student Name list</h2>
 </body>
 </html>
