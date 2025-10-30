@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\RoleRedirectController; // ✅ এই Controller টি লগইন রিডাইরেক্ট হ্যান্ডেল করবে
+use App\Http\Controllers\RoleRedirectController; // ✅ এটি যোগ করতে হবে
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,19 +18,30 @@ Route::get('/', function () {
 |--------------------------------------------------------------------------
 | Multi-Role Redirect
 |--------------------------------------------------------------------------
-| এই রুটটি /dashboard URL-এ হিট করলে ইউজারকে তার role অনুযায়ী সঠিক ড্যাশবোর্ডে পাঠাবে।
-| যেমন: /admin/dashboard বা /vendor/dashboard
+| এই রুটটি লগইন করার পর ইউজারকে তার role অনুযায়ী সঠিক ড্যাশবোর্ডে রিডাইরেক্ট করবে।
 */
-
+// (১) /dashboard route টি এখন RoleRedirectController কে কল করবে।
 Route::get('/dashboard', [RoleRedirectController::class, 'index'])
     ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+    ->name('dashboard'); // ✅ এই name টি login এর পর ডিফল্ট redirect হিসেবে ব্যবহৃত হবে
+
+
+/*
+|--------------------------------------------------------------------------
+| General User Dashboard (Customer/Rider)
+|--------------------------------------------------------------------------
+| RoleRedirectController থেকে এই রুটে redirect হবে যখন role 'admin' বা 'vendor' না হবে।
+*/
+// (২) ডিফল্ট ইউজারদের জন্য একটি নতুন route, যা অরিজিনাল dashboard view দেখাবে।
+Route::get('/general/dashboard', function () {
+    return view('dashboard'); // resources/views/dashboard.blade.php ফাইলটি লোড হবে
+})->middleware(['auth', 'verified'])->name('user.dashboard');
+
 
 /*
 |--------------------------------------------------------------------------
 | Authenticated User Routes (Profile)
 |--------------------------------------------------------------------------
-| এই রুটগুলো সব লগইন করা ইউজারের জন্য।
 */
 
 Route::middleware('auth')->group(function () {
@@ -44,10 +55,9 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 | Role Specific Routes
 |--------------------------------------------------------------------------
-| Admin এবং Vendor এর জন্য আলাদা Route ফাইল লোড করা হলো।
 */
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/admin.php'; // ✅ Admin routes
 require __DIR__ . '/vendor.php'; // ✅ Vendor routes
-// require __DIR__ . '/customer.php'; // ❌ এই লাইনটি বাদ দেওয়া হলো
+// require __DIR__ . '/customer.php'; // যদি customer.php ফাইল না থাকে, তবে এই লাইনটি বাদ দেওয়া যেতে পারে
