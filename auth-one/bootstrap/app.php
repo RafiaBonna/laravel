@@ -11,11 +11,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // *** এই ব্লকটি পরিবর্তন করতে হবে ***
+        // *** এইখানে তোমার RoleMiddleware টি Alias হিসেবে রেজিস্টার করা হলো ***
         $middleware->alias([
-            'role' => \App\Http\Middleware\RoleMiddleware::class, // <-- এই লাইনটি যুক্ত করো
+            'role' => \App\Http\Middleware\RoleMiddleware::class, // 'role' Alias টি এখন Routes এ ব্যবহার করা যাবে
         ]);
-        // **********************************
+        
+        // তুমি যদি web বা api এর জন্য global middleware যোগ করতে চাও, এইখানে যোগ করতে পারো:
+        // $middleware->web(\App\Http\Middleware\SomeWebMiddleware::class);
+        // $middleware->api(\App\Http\Middleware\SomeApiMiddleware::class);
+        
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
