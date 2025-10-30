@@ -11,7 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // *** এই ব্লকটি পরিবর্তন করতে হবে ***
+        $middleware->alias([
+            'role' => \App\Http\Middleware\RoleMiddleware::class, // <-- এই লাইনটি যুক্ত করো
+        ]);
+        // **********************************
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
