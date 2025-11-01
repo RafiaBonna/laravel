@@ -6,21 +6,30 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
+        // নিশ্চিত করুন যে users টেবিলটি ডিলিট হয়েছে
+        Schema::dropIfExists('users'); 
+
+        // ✅ নতুন users টেবিল তৈরি করা হচ্ছে (role_id সহ)
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            
+            // role_id কলাম যোগ করা হলো
+            $table->foreignId('role_id')
+                  ->default(1) // ডিফল্ট রোল ID সেট করুন (মনে রাখবেন: ID=1 রোলটি অবশ্যই থাকতে হবে)
+                  ->constrained('roles') // roles টেবিলের সাথে ফরেন কী রিলেশন
+                  ->onDelete('cascade'); 
+
             $table->rememberToken();
             $table->timestamps();
         });
 
+        // আপনার অন্যান্য ডিফল্ট টেবিলগুলি তৈরি করুন (যদি না থাকে)
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
@@ -37,9 +46,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('users');

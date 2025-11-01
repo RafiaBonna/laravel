@@ -3,72 +3,81 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    // ✅ Show all users (route: /users)
+    // Show all users
     public function index()
     {
-        $users = User::all();
+        $users = User::with('role')->get();
         return view('pages.user.view', compact('users'));
     }
 
-    // ✅ Show the user creation form (route: /add-user)
+    // Show form to add new user
     public function create()
     {
-        return view('pages.user.add-user');
+        $roles = Role::all();
+        return view('pages.user.add-user', compact('roles'));
     }
 
-    // ✅ Store a new user (route: POST /userStore)
+    // Store new user
     public function store(Request $request)
     {
-        // Validation (optional but recommended)
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
+            'role_id' => 'required|exists:roles,id',
         ]);
 
-        // Create user
         User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => $request->password, // You can later hash it if needed
+            'password' => Hash::make($request->password),
+            'role_id' => $request->role_id,
         ]);
 
-        // Redirect back to the users list
         return Redirect::route('user.index');
     }
 
-    // ✅ Delete a user (route: DELETE /delete)
-    public function destroy(Request $request)
+    // Show form to edit user
+    public function edit(User $user)
     {
-        $user = User::findOrFail($request->user_id);
+        $roles = Role::all();
+        return view('pages.user.edit', compact('user', 'roles'));
+    }
+
+    // Update user
+    public function update(Request $request, User $user)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'role_id' => 'required|exists:roles,id',
+            'password' => 'nullable|min:6',
+        ]);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->role_id = $request->role_id;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return Redirect::route('user.index');
+    }
+
+    // Delete user
+    public function destroy(User $user)
+    {
         $user->delete();
-
-        return Redirect::route('user.index');
-    }
-
-    // ✅ Show edit form (route: GET /userEdit/{user_id})
-    public function update($user_id)
-    {
-        $user = User::findOrFail($user_id);
-        return view('pages.user.edit', compact('user'));
-    }
-
-    // ✅ Update user info (route: POST /editStoreU)
-    public function editStoreU(Request $request)
-    {
-        $user = User::findOrFail($request->user_id);
-
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password,
-        ]);
-
         return Redirect::route('user.index');
     }
 }

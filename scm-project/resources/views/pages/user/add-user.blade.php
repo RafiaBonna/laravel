@@ -1,37 +1,38 @@
 @extends('master')
 
 @section('content')
-<div class="card bg-primary-subtle p-5 w-100">
-  <!-- Full-width background container -->
-  <div class="bg-info-subtle p-5 rounded w-100 mt-5">
+<div class="container mt-4">
+    <h2>Add New User</h2>
 
-    <!-- Centered form inside full-width container -->
-    <div class="d-flex justify-content-center">
-      <form method="POST" action="{{ route('userStore') }}" class="w-100" style="max-width: 500px;">
+    <form action="{{ route('user.store') }}" method="POST">
         @csrf
-        <h1 class="text-center mb-4">Add Users</h1>
 
-        <div class="mb-3">
-          <label class="form-label">Name</label>
-          <input type="text" name="name" class="form-control" required>
+        <div class="form-group mb-3">
+            <label>Name:</label>
+            <input type="text" name="name" class="form-control" required>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">Email</label>
-          <input type="email" name="email" class="form-control" required>
+        <div class="form-group mb-3">
+            <label>Email:</label>
+            <input type="email" name="email" class="form-control" required>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">PASSWORD</label>
-          <input type="password" name="password" class="form-control" required>
+        <div class="form-group mb-3">
+            <label>Password:</label>
+            <input type="password" name="password" class="form-control" required>
         </div>
 
-        <div class="text-center">
-          <button type="submit" class="btn btn-primary form-control">Submit</button>
+        <div class="form-group mb-3">
+            <label>Role:</label>
+            <select name="role_id" class="form-control" required>
+                @foreach (\App\Models\Role::all() as $role)
+                    <option value="{{ $role->id }}">{{ $role->name }}</option>
+                @endforeach
+            </select>
         </div>
-      </form>
-    </div>
 
-  </div>
+        <button type="submit" class="btn btn-success">Save</button>
+        <a href="{{ route('user.index') }}" class="btn btn-secondary">Back</a>
+    </form>
 </div>
 @endsection

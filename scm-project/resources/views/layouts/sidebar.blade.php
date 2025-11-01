@@ -29,55 +29,55 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
           {{-- 1. Dashboard (Icon KEPT as fas fa-tachometer-alt) --}}
-          <li class="nav-item"> 
-            <a href="/dash" class="nav-link">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
-              <p>Dashboard</p>
-            </a>
-          </li>
-
-          {{-- 2. Users Management (Icon changed to a Box icon) --}}
-          <li class="nav-item">
-            <a class="nav-link" href="{{ route('user.index') }}"> 
-              <i class="nav-icon fas fa-box"></i> 
-              <p>Users Management</p>
-            </a>
-          </li>
-
-          {{-- 3. Supplier (Icon changed to a Box icon) --}}
-          <li class="nav-item">
-            <a class="nav-link" href="{{ route('supplier.index') }}">
-              <i class="nav-icon fas fa-box"></i> 
-              <p>Supplier</p>
-            </a>
-          </li>
-
-       <li class="nav-item">
-            {{-- Raw Material (Icon changed to a Box icon) --}}
-            <a class="nav-link" href="{{ route('raw_material.index') }}">
-              <i class="nav-icon fas fa-box"></i> 
-              <p>Raw Material</p>
-            </a>
-          </li>
         <li class="nav-item">
-    <a class="nav-link" href="{{ route('stockin.create') }}">
-        <i class="nav-icon fas fa-box"></i>
+    <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-tachometer-alt"></i>
+        <p>Dashboard</p>
+    </a>
+</li>
+
+<li class="nav-item">
+    <a href="{{ route('user.index') }}" class="nav-link {{ request()->routeIs('user.*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-users"></i>
+        <p>Users Management</p>
+    </a>
+</li>
+
+<li class="nav-item">
+    <a href="{{ route('supplier.index') }}" class="nav-link {{ request()->routeIs('supplier.*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-truck"></i>
+        <p>Supplier</p>
+    </a>
+</li>
+
+<li class="nav-item">
+    <a href="{{ route('raw_material.index') }}" class="nav-link {{ request()->routeIs('raw_material.*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-cubes"></i>
+        <p>Raw Material</p>
+    </a>
+</li>
+
+<li class="nav-item">
+    <a href="{{ route('stockin.index') }}" class="nav-link {{ request()->routeIs('stockin.*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-arrow-circle-down"></i>
         <p>Stock In</p>
     </a>
-    </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('depot.index') }}">
-              <i class="nav-icon fas fa-box"></i> {{-- Changed icon to a warehouse for depots --}}
-              <p>Depot Management</p>
-            </a>
-        </li>
+</li>
 
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('stockout.create') }}">
-              <i class="nav-icon fas fa-box"></i> {{-- Changed icon to a warehouse for depots --}}
-              <p>Stock Out</p>
-            </a>
-        </li>
+<li class="nav-item">
+    <a href="{{ route('stockout.index') }}" class="nav-link {{ request()->routeIs('stockout.*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-arrow-circle-up"></i>
+        <p>Stock Out</p>
+    </a>
+</li>
+
+<li class="nav-item">
+    <a href="{{ route('depot.index') }}" class="nav-link {{ request()->routeIs('depot.*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-warehouse"></i>
+        <p>Depot Management</p>
+    </a>
+</li>
+
         </ul>
       </nav>
       </div>
