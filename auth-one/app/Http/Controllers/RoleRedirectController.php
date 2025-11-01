@@ -7,14 +7,10 @@ use Illuminate\Support\Facades\Auth;
 
 class RoleRedirectController extends Controller
 {
-    /**
-     * লগইন করার পর ইউজারের রোল চেক করে তাকে তার নিজস্ব ড্যাশবোর্ডে পাঠাবে।
-     */
     public function index()
     {
-        // এই চেকটি 'auth' middleware হ্যান্ডেল করে, তবে সেফটির জন্য রাখা হলো।
         if (!Auth::check()) {
-            return redirect('/login'); 
+            return redirect()->route('login'); 
         }
 
         $user = Auth::user();
@@ -22,14 +18,14 @@ class RoleRedirectController extends Controller
 
         switch ($role) {
             case 'admin':
-                return redirect()->route('admin.dashboard'); // Admin এর ড্যাশবোর্ড
-            case 'vendor':
-                return redirect()->route('vendor.dashboard'); // Vendor এর ড্যাশবোর্ড
-            case 'customer':
-            case 'rider':
+                return redirect()->route('admin.dashboard');
+            case 'depo':
+                return redirect()->route('depo.dashboard');
+            case 'distributor':
+                return redirect()->route('distributor.dashboard');
+            case 'superadmin': // ✅ CRITICAL: সবার উপরে নতুন Superadmin রোলের চেক
+                return redirect()->route('superadmin.dashboard');
             default:
-                // Customer, Rider বা অন্য যেকোনো ডিফল্ট ইউজারের জন্য।
-                // (redirect loop এড়ানোর জন্য এটি একটি নতুন/সাধারণ ড্যাশবোর্ড রুটে যাবে)
                 return redirect()->route('user.dashboard'); 
         }
     }

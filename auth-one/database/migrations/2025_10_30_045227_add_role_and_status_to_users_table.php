@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             // role কলামটি password কলামের পরে যুক্ত করা হলো
-            $table->enum('role', ['admin', 'vendor', 'customer', 'rider'])->default('customer')->index()->after('password');
+            $table->enum('role', ['admin', 'depo','distributor'])->default('admin')->index()->after('password');
             
             // status কলামটি role কলামের পরে যুক্ত করা হলো
             $table->enum('status', ['active', 'inactive'])->default('active')->index()->after('role');

@@ -12,32 +12,34 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'name' => 'Admin User',
+            'name' => 'Admin',
             'email' => 'admin@gmail.com',
             'role' => 'admin',
             'status' => 'active',
             'password' => Hash::make('1234'),
         ]);
         User::create([
-            'name' => 'Vendor User',
-            'email' => 'vendor@gmail.com',
-            'role' => 'vendor',
+            'name' => 'Depot',
+            'email' => 'depo@gmail.com',
+            'role' => 'depo',
             'status' => 'active',
             'password' => Hash::make('1234'),
         ]);
         User::create([
-            'name' => 'Customer User',
-            'email' => 'customer@gmail.com',
-            'role' => 'customer',
+            'name' => 'Distributor',
+            'email' => 'dist@gmail.com',
+            'role' => 'distributor',
             'status' => 'active',
             'password' => Hash::make('1234'),
         ]);
+        // ⭐⭐ নতুন Super Admin ইউজার ⭐⭐
         User::create([
-            'name' => 'Rider User',
-            'email' => 'rider@gmail.com',
-            'role' => 'rider',
+            'name' => 'SuperAdmin', 
+            'email' => 'sup@gmail.com', // নতুন ইমেইল ব্যবহার করুন
+            'role' => 'superadmin',           // ✅ নতুন রোল
             'status' => 'active',
             'password' => Hash::make('1234'),
         ]);
+      
     }
 }

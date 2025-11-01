@@ -13,6 +13,6 @@ class AdminDashboardController extends Controller
     public function index()
     {
         // নিশ্চিত করুন resources/views/admin/dashboard.blade.php ফাইলটি তৈরি আছে।
-        return view('admin.dashboard'); 
+        return view('admin_panel.dashboard'); 
     }
 }
