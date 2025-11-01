@@ -58,7 +58,6 @@ Route::post('/logout', function () {
 |--------------------------------------------------------------------------
 */
 require __DIR__ . '/auth.php';         // Laravel Breeze auth
-require __DIR__ . '/admin.php';        // Admin routes
 require __DIR__ . '/superadmin.php';   // ✅ নতুন Superadmin রুট যুক্ত করুন
 require __DIR__ . '/depo.php';         // Depo routes
 require __DIR__ . '/distributor.php';  // Distributor routes

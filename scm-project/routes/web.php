@@ -1,81 +1,20 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\StockInController; // নতুন: Raw Material Receive-এর জন্য
-use App\Http\Controllers\RawMaterialController; 
-use App\Http\Controllers\StockOutController;
-use App\Http\Controllers\DepotController; // ✅ NEW: Depot Controller যোগ করা হলো
-
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-// ===================================
-// 1. User Management Routes
-// ===================================
-Route::get('/users', [UserController::class, 'index'])->name('user.index');
-Route::get('/add-user', [UserController::class, 'create'])->name('userCreate');
-Route::post('userStore', [UserController::class, 'store'])->name('userStore');
-Route::get('userEdit/{user_id}', [UserController::class, 'update'])->name('userEdit');
-Route::post('editStoreU', [UserController::class, 'editStoreU'])->name('editStoreU');
-Route::delete('delete', [UserController::class, 'destroy'])->name('delete');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-
-// ===================================
-// 2. Supplier Management Routes
-// ===================================
-Route::get('/suppliers', [SupplierController::class, 'index'])->name('supplier.index');
-Route::get('/add-supplier', [SupplierController::class, 'create'])->name('supplier.create');
-Route::post('/supplierStore', [SupplierController::class, 'store'])->name('supplier.store');
-Route::get('/supplierEdit/{supplier_id}', [SupplierController::class, 'edit'])->name('supplier.edit');
-Route::post('/supplierUpdate', [SupplierController::class, 'updateStore'])->name('supplier.update');
-Route::delete('/supplierDelete', [SupplierController::class, 'destroy'])->name('supplier.delete');
-
-
-// ===================================
-// 3. Raw Material &  (New Module)
-// ===================================
-
-
-Route::get('/raw-materials', [RawMaterialController::class, 'index'])->name('raw_material.index');
-Route::get('/raw-materials/create', [RawMaterialController::class, 'create'])->name('raw_material.create');
-Route::post('/raw-materials', [RawMaterialController::class, 'store'])->name('raw_material.store');
-Route::get('/raw-materials/{id}/edit', [RawMaterialController::class, 'edit'])->name('raw_material.edit');
-Route::put('/raw-materials/{id}', [RawMaterialController::class, 'update'])->name('raw_material.update');
-Route::delete('/raw-materials/{id}', [RawMaterialController::class, 'destroy'])->name('raw_material.destroy');
-
-// ===================================
-// 4. Stock in (New Module)
-// ===================================
-
-Route::prefix('stock-in')->group(function () {
-    Route::get('/create', [StockInController::class, 'create'])->name('stockin.create');
-    Route::post('/store', [StockInController::class, 'store'])->name('stockin.store');
-    Route::get('/list', [StockInController::class, 'index'])->name('stockin.index');
-    Route::get('/invoice/{id}', [StockInController::class, 'invoice'])->name('stockin.invoice');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// ===================================
-// 5. Depot Management (New Module)
-// ===================================
-
-Route::get('/depots', [DepotController::class, 'index'])->name('depot.index');
-Route::get('/depots/create', [DepotController::class, 'create'])->name('depot.create');
-Route::post('/depots', [DepotController::class, 'store'])->name('depot.store');
-Route::get('/depots/{id}/edit', [DepotController::class, 'edit'])->name('depot.edit');
-Route::put('/depots/{id}', [DepotController::class, 'update'])->name('depot.update');
-Route::delete('/depots/{id}', [DepotController::class, 'destroy'])->name('depot.destroy');
-
-// ===================================
-// 6. Stock Out (New Module)
-// ===================================
-
-Route::prefix('stock-out')->group(function () {
-    Route::get('/create', [StockOutController::class, 'create'])->name('stockout.create');
-    Route::post('/store', [StockOutController::class, 'store'])->name('stockout.store');
-    Route::get('/list', [StockOutController::class, 'index'])->name('stockout.index');
-    Route::get('/invoice/{id}', [StockOutController::class, 'invoice'])->name('stockout.invoice'); 
-});
+require __DIR__.'/auth.php';
