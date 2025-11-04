@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo; // Import BelongsTo for type-hinting
 
 class Shipment extends Model
 {
@@ -61,5 +62,14 @@ class Shipment extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Define relationship with the primary Depo associated via 'depo_id'.
+     * This fixes the RelationNotFoundException.
+     */
+    public function depo(): BelongsTo // ✅ ADDED THIS RELATIONSHIP
+    {
+        return $this->belongsTo(Depo::class, 'depo_id');
     }
 }
