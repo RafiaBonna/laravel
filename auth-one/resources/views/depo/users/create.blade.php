@@ -41,7 +41,7 @@
                                     @enderror
                                 </div>
                                 
-                                {{-- Hidden Role Field: Controller-এ এই ফিল্ডের প্রয়োজন নেই, তবে সুরক্ষার জন্য রাখা যেতে পারে . --}}
+                                {{-- Hidden Role Field: Controller-এ এই ফিল্ডের প্রয়োজন নেই, তবে সুরক্ষার জন্য রাখা যেতে পারে  --}}
                                 <input type="hidden" name="role" value="distributor"> 
                                 
                                 {{-- Password Field --}}
