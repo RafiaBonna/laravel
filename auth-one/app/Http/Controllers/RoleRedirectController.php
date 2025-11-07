@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller; 
 
 class RoleRedirectController extends Controller
 {
@@ -14,17 +14,17 @@ class RoleRedirectController extends Controller
         }
 
         $user = Auth::user();
-        $role = $user->role;
+        
+        $roleSlug = $user->getPrimaryRole();
 
-        switch ($role) {
-            case 'admin':
-                return redirect()->route('admin.dashboard');
+        switch ($roleSlug) {
+            case 'superadmin':
+                return redirect()->route('superadmin.dashboard');
+            // ❌ Admin-এর জন্য কোনো কেস নেই
             case 'depo':
                 return redirect()->route('depo.dashboard');
             case 'distributor':
                 return redirect()->route('distributor.dashboard');
-            case 'superadmin': // ✅ CRITICAL: সবার উপরে নতুন Superadmin রোলের চেক
-                return redirect()->route('superadmin.dashboard');
             default:
                 return redirect()->route('user.dashboard'); 
         }

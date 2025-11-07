@@ -6,7 +6,8 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasOne; // <-- ✅ নতুন আমদানি
+use Illuminate\Database\Eloquent\Relations\HasOne; 
+use Illuminate\Database\Eloquent\Relations\BelongsToMany; // ✅ নতুন আমদানি
 
 class User extends Authenticatable
 {
@@ -21,52 +22,67 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',    // <-- আপনার যোগ করা
-        'status',  // <-- আপনার যোগ করা
+        // 'role', // ❌ OLD: role কলামটি আর fillable হবে না
+        'status',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    // ... (অন্যান্য protected properties যেমন $hidden, $casts অপরিবর্তিত থাকবে)
+
+    // =========================================================
+    // ✅ NEW: RELATIONSHIPS FOR RBAC
+    // =========================================================
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * User has many Roles (Many-to-Many).
      */
-    protected function casts(): array
+    public function roles(): BelongsToMany
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->belongsToMany(Role::class);
     }
     
     // =========================================================
-    // ✅ NEW: RELATIONSHIPS FOR DEPO AND DISTRIBUTOR TABLES
+    // ✅ NEW: RBAC HELPER FUNCTIONS
     // =========================================================
 
     /**
-     * Get the Depo record associated with the user (if role is 'depo').
+     * Checks if the user has a specific role.
      */
+    public function hasRole(string $roleSlug): bool
+    {
+        return $this->roles()->where('slug', $roleSlug)->exists();
+    }
+    
+    /**
+     * Gets the primary role slug for redirection after login.
+     * আমাদের অ্যাপ্লিকেশনে একটি ইউজার একটিই প্রাইমারি রোল পাবে।
+     */
+    public function getPrimaryRole(): string
+    {
+        // রোলগুলো Priority অনুযায়ী চেক করুন
+        if ($this->hasRole('superadmin')) {
+            return 'superadmin';
+        }
+        if ($this->hasRole('depo')) {
+            return 'depo';
+        }
+        if ($this->hasRole('distributor')) {
+            return 'distributor';
+        }
+        
+        // কোনো নির্দিষ্ট রোল না পেলে 'user' ডিফল্ট হিসেবে ধরুন
+        return 'user'; 
+    }
+
+    // ... (Optional: You can keep depo() and distributor() HasOne relations
+    // as they are, for accessing Depo/Distributor-specific details)
+
     public function depo(): HasOne
     {
-        // One user (Depo role) has one Depo record
         return $this->hasOne(Depo::class);
     }
     
-    /**
-     * Get the Distributor record associated with the user (if role is 'distributor').
-     */
     public function distributor(): HasOne
     {
-        // One user (Distributor role) has one Distributor record
         return $this->hasOne(Distributor::class);
     }
 }
