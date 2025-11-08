@@ -15,7 +15,7 @@ class SupplierController extends Controller
     public function index()
     {
         $suppliers = Supplier::orderBy('id', 'desc')->paginate(10);
-        return view('superadmin.settings.suppliers.index', compact('suppliers'));
+        return view('superadmin.suppliers.index', compact('suppliers'));
     }
 
     /**
@@ -23,7 +23,7 @@ class SupplierController extends Controller
      */
     public function create()
     {
-        return view('superadmin.settings.suppliers.create');
+        return view('superadmin.suppliers.create');
     }
 
     /**
@@ -50,7 +50,7 @@ class SupplierController extends Controller
      */
     public function show(Supplier $supplier)
     {
-        return view('superadmin.settings.suppliers.show', compact('supplier'));
+        return view('superadmin.suppliers.show', compact('supplier'));
     }
 
     /**
@@ -58,7 +58,7 @@ class SupplierController extends Controller
      */
     public function edit(Supplier $supplier)
     {
-        return view('superadmin.settings.suppliers.edit', compact('supplier'));
+        return view('superadmin.suppliers.edit', compact('supplier'));
     }
 
     /**
