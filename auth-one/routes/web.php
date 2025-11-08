@@ -2,13 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\RoleRedirectController; // ✅ RoleRedirectController আমদানি করা হয়েছে
+use App\Http\Controllers\RoleRedirectController;
 
 /*
 |--------------------------------------------------------------------------
-| Default Route → Login
+| Default Route → Redirect to Login
 |--------------------------------------------------------------------------
-| '/' রুটে গেলে সরাসরি লগইন পেজে রিডাইরেক্ট করবে।
 */
 Route::get('/', function () {
     return redirect()->route('login');
@@ -18,21 +17,21 @@ Route::get('/', function () {
 |--------------------------------------------------------------------------
 | Role Based Dashboard Redirect
 |--------------------------------------------------------------------------
-| লগইন করার পর, এই রুটটি ইউজারকে তার রোল অনুযায়ী সঠিক ড্যাশবোর্ডে পাঠাবে।
+| লগইন করার পর ইউজারকে তার রোল অনুযায়ী সঠিক ড্যাশবোর্ডে পাঠাবে।
 */
 Route::get('/dashboard', [RoleRedirectController::class, 'index'])
     ->middleware(['auth', 'verified'])
-    ->name('dashboard'); // প্রধান ড্যাশবোর্ড রুট
+    ->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------
-| General User Dashboard
+| General User Dashboard (Fallback)
 |--------------------------------------------------------------------------
-| যদি RoleRedirectController কোনো নির্দিষ্ট রোলের জন্য রুট না খুঁজে পায়,
-| তবে এটি ডিফল্ট ইউজার ড্যাশবোর্ডে পাঠাতে পারে।
+| যদি RoleRedirectController কোনো নির্দিষ্ট রোল না খুঁজে পায়,
+| তবে এটি সাধারণ ইউজার ড্যাশবোর্ডে পাঠাবে।
 */
 Route::get('/general/dashboard', function () {
-    return view('dashboard'); 
+    return view('dashboard');
 })->middleware(['auth', 'verified'])->name('user.dashboard');
 
 /*
@@ -48,24 +47,23 @@ Route::middleware('auth')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Logout Route (Breeze Auth)
+| Logout Route (For Breeze / Custom Auth)
 |--------------------------------------------------------------------------
-| লগআউট রুটটি 'auth.php' ফাইল থেকে আসার কথা, তবে নিশ্চিত করার জন্য এখানে রাখা যেতে পারে
-| অথবা যদি আপনি কাস্টম লগআউট চান, তবে এটি ব্যবহার করতে পারেন।
+| সাধারণত logout route 'auth.php' থেকে আসে, কিন্তু এখানে fallback হিসেবে রাখা হয়েছে।
 */
 Route::post('/logout', function () {
     auth()->logout();
     return redirect()->route('login');
 })->name('logout');
 
-
 /*
 |--------------------------------------------------------------------------
-| Include Role Specific Routes
+| Include Role Specific Route Files
 |--------------------------------------------------------------------------
-| আপনার রোল-ভিত্তিক রুট ফাইলগুলি আমদানি করা হচ্ছে
+| Superadmin, Depo, Distributor – এই তিনটা role এর আলাদা route ফাইল।
+| ⚠️ সব সময় 'require' গুলো নিচে রাখো, যাতে default route গুলোর সাথে conflict না হয়।
 */
-require __DIR__ . '/auth.php';          // Laravel Breeze auth
-require __DIR__ . '/superadmin.php';    // ✅ Superadmin Routes
-require __DIR__ . '/depo.php';          // Depo Routes
-require __DIR__ . '/distributor.php';   // Distributor Routes
+require __DIR__ . '/auth.php';           // Laravel Breeze routes
+require __DIR__ . '/superadmin.php';     // Superadmin routes
+require __DIR__ . '/depo.php';           // Depo routes
+require __DIR__ . '/distributor.php';    // Distributor routes

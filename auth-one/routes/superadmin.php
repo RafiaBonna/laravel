@@ -4,7 +4,7 @@
 
 use App\Http\Controllers\Superadmin\SuperadminDashboardController;
 use App\Http\Controllers\Superadmin\UserController;
-use App\Http\Controllers\Superadmin\SupplierController; // ✅ নতুন Controller আমদানি
+use App\Http\Controllers\Superadmin\SupplierController; // ✅ SupplierController আমদানি করা হয়েছে
 
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +20,7 @@ Route::prefix('superadmin')->group(function () {
 
         // --- INVENTORY / SETTINGS ---
         // ✅ Supplier Management Resource Route
-        // আমরা Settings মেনুর অধীনে রাখলেও রুট-এর নাম সহজ রাখছি: superadmin.suppliers.*
+        // রুট-এর নাম: superadmin.suppliers.*
         Route::resource('/suppliers', SupplierController::class)->names('superadmin.suppliers'); 
      
     });
