@@ -2,7 +2,7 @@
 // sidebar.blade.php
 
 // Note: এই ফাইলটিতে Superadmin, Depo, এবং Distributor-এর জন্য আলাদা নেভিগেশন লিংকগুলো থাকবে। 
-// Auth::user()->role চেক করে প্রতিটি রোল অনুযায়ী নেভিগেশন দেখাবে।
+// Auth::user()->hasRole() চেক করে প্রতিটি রোল অনুযায়ী নেভিগেশন দেখাবে।
 ?>
 <aside class="main-sidebar sidebar-dark-indigo elevation-4">
     <a href="{{ route('dashboard') }}" class="brand-link">
@@ -17,8 +17,8 @@
                 <img src="{{ asset('admin/dist/img/user.png') }}" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
-                {{-- Display logged-in user's name and role --}}
-                <a href="#" class="d-block">{{ Auth::user()->name ?? 'Guest' }} ({{ ucfirst(Auth::user()->role ?? 'Guest') }})</a>
+                {{-- Display logged-in user's name and role (Using getPrimaryRole() helper) --}}
+                <a href="#" class="d-block">{{ Auth::user()->name ?? 'Guest' }} ({{ ucfirst(Auth::user()->getPrimaryRole() ?? 'Guest') }})</a>
             </div>
         </div>
 
@@ -26,121 +26,96 @@
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
                 {{-- Dashboard Link (Common for all roles) --}}
-                <li class="nav-item"> 
-                    <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('*.dashboard') ? 'active' : '' }}"> 
+                <li class="nav-item">
+                    <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') || request()->routeIs('*.dashboard') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
                 
                 {{-- ----------------------------------------------------------------- --}}
-                {{--                           SUPERADMIN NAVIGATION                     --}}
+                {{--                        SUPERADMIN MENU (ROLE: superadmin)           --}}
                 {{-- ----------------------------------------------------------------- --}}
-                @if (Auth::user()->role === 'superadmin')
+                @if (Auth::user()->hasRole('superadmin'))
                     <li class="nav-header">ADMINISTRATION</li>
                     
-                    {{-- Depo Management (নতুন যুক্ত করা হয়েছে) --}}
+                    {{-- ✅ 1. User Management --}}
                     <li class="nav-item">
-                        <a href="{{ route('superadmin.depos.index') }}" class="nav-link {{ request()->routeIs('superadmin.depos.*') ? 'active' : '' }}"> 
-                            <i class="nav-icon fas fa-warehouse"></i> 
-                            <p>Depo Management</p>
-                        </a>
-                    </li>
-                    
-                    {{-- User Management --}}
-                    <li class="nav-item">
-                        <a href="{{ route('superadmin.users.index') }}" class="nav-link {{ request()->routeIs('superadmin.users.*') ? 'active' : '' }}"> 
-                            <i class="nav-icon fas fa-users"></i> 
+                        <a href="{{ route('superadmin.users.index') }}" class="nav-link {{ request()->routeIs('superadmin.users.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-users"></i>
                             <p>User Management</p>
                         </a>
                     </li>
                     
-                    <li class="nav-header">RAW MATERIAL MANAGEMENT</li>
-                    
-                    {{-- Raw Material Category --}}
-                    <li class="nav-item">
-                        <a href="{{ route('superadmin.raw_materials.index') }}" class="nav-link {{ request()->routeIs('superadmin.raw_materials.*') ? 'active' : '' }}"> 
-                            <i class="nav-icon fas fa-layer-group"></i> 
-                            <p>Raw Materials</p>
+                    {{-- 2. MASTER SETUP SUB-MENU --}}
+                    <li class="nav-item {{ request()->routeIs('superadmin.depos.*') || request()->routeIs('superadmin.distributors.*') ? 'menu-open' : '' }}">
+                        <a href="#" class="nav-link {{ request()->routeIs('superadmin.depos.*') || request()->routeIs('superadmin.distributors.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-database"></i>
+                            <p>
+                                Master Setup
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
                         </a>
-                    </li>
-
-                    {{-- Raw Material Receiving (Stock In) --}}
-                    <li class="nav-item">
-                        <a href="{{ route('superadmin.raw_material_receivings.index') }}" class="nav-link {{ request()->routeIs('superadmin.raw_material_receivings.*') ? 'active' : '' }}"> 
-                            <i class="nav-icon fas fa-arrow-down"></i> 
-                            <p>Stock In (Receiving)</p>
-                        </a>
-                    </li>
-
-                    {{-- Raw Material Consumption --}}
-                    <li class="nav-item">
-                        <a href="{{ route('superadmin.raw_material_consumptions.index') }}" class="nav-link {{ request()->routeIs('superadmin.raw_material_consumptions.*') ? 'active' : '' }}"> 
-                            <i class="nav-icon fas fa-truck-loading"></i> 
-                            <p>Consumption (Production)</p>
-                        </a>
-                    </li>
-
-                    {{-- Raw Material Shipments (Stock Out / Transfer Out) (নতুন যুক্ত করা হয়েছে) --}}
-                    <li class="nav-item">
-                        <a href="{{ route('superadmin.raw_material_shipments.index') }}" class="nav-link {{ request()->routeIs('superadmin.raw_material_shipments.*') ? 'active' : '' }}"> 
-                            <i class="nav-icon fas fa-shipping-fast"></i> 
-                            <p>Shipments (Transfer Out)</p>
-                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                {{-- Master Setup-এর জন্য আপনার Route Name ব্যবহার করুন --}}
+                                <a href="{{-- route('superadmin.depos.index') --}}" class="nav-link {{ request()->routeIs('superadmin.depos.*') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Depo Setup</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{-- route('superadmin.distributors.index') --}}" class="nav-link {{ request()->routeIs('superadmin.distributors.*') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Distributor Setup</p>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 @endif
-                
-                {{-- ----------------------------------------------------------------- --}}
-                {{--                           DEPO NAVIGATION                           --}}
-                {{-- ----------------------------------------------------------------- --}}
-                @if (Auth::user()->role === 'depo')
-                    <li class="nav-header">DEPO OPERATIONS</li>
 
-                    {{-- Incoming Shipments (Receive) (নতুন যুক্ত করা হয়েছে) --}}
-                    <li class="nav-item">
-                        <a href="{{ route('depo.shipments.index') }}" class="nav-link {{ request()->routeIs('depo.shipments.*') ? 'active' : '' }}"> 
-                            <i class="nav-icon fas fa-box-open"></i> 
-                            <p>Incoming Shipments (Receive)</p>
-                        </a>
-                    </li>
 
-                    {{-- Depo Stock (Placeholder) --}}
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"> <i class="nav-icon fas fa-warehouse"></i> 
-                            <p>Current Depo Stock</p>
-                        </a>
-                    </li>
+                {{-- ----------------------------------------------------------------- --}}
+                {{--                        DEPO MENU (ROLE: depo)                     --}}
+                {{-- ----------------------------------------------------------------- --}}
+                @if (Auth::user()->hasRole('depo'))
+                    <li class="nav-header">DEPO MANAGEMENT</li>
                     
-                    {{-- Distributor Management --}}
                     <li class="nav-item">
-                        <a href="{{ route('depo.users.index') }}" class="nav-link {{ request()->routeIs('depo.users.*') ? 'active' : '' }}"> 
-                            <i class="nav-icon fas fa-users"></i> 
+                        {{-- Distributor Management Route --}}
+                        <a href="{{-- route('depo.distributors.index') --}}" class="nav-link"> 
+                            <i class="nav-icon fas fa-people-carry"></i> 
                             <p>Distributor Management</p>
                         </a>
                     </li>
                     
-                    {{-- Other Placeholder Links from ERD --}}
+                    {{-- Other Placeholder Links --}}
                     <li class="nav-item">
-                        <a href="#" class="nav-link"> <i class="nav-icon fas fa-clipboard-list"></i> 
-                            <p>Sales Order Processing</p>
+                        <a href="#" class="nav-link"> <i class="nav-icon fas fa-box"></i> 
+                            <p>Stock & Inventory</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link"> <i class="nav-icon fas fa-file-invoice"></i> 
+                            <p>Reports</p>
                         </a>
                     </li>
                 @endif
 
+
                 {{-- ----------------------------------------------------------------- --}}
-                {{--                         DISTRIBUTOR NAVIGATION                      --}}
+                {{--                     DISTRIBUTOR MENU (ROLE: distributor)            --}}
                 {{-- ----------------------------------------------------------------- --}}
-                @if (Auth::user()->role === 'distributor')
-                    <li class="nav-header">DISTRIBUTOR OPERATIONS</li>
-                    
-                    {{-- Customer Management --}}
+                @if (Auth::user()->hasRole('distributor'))
+                    <li class="nav-header">SALES & CUSTOMERS</li>
                     <li class="nav-item">
-                        <a href="{{ route('distributor.customers.index') }}" class="nav-link {{ request()->routeIs('distributor.customers.*') ? 'active' : '' }}"> 
-                            <i class="nav-icon fas fa-handshake"></i> 
+                        {{-- Customer Management Route --}}
+                        <a href="{{-- route('distributor.customers.index') --}}" class="nav-link"> 
+                            <i class="nav-icon fas fa-address-book"></i> 
                             <p>Customer Management</p>
                         </a>
                     </li>
-                    {{-- Other Placeholder Links from ERD --}}
+                    {{-- Other Placeholder Links --}}
                     <li class="nav-item">
                         <a href="#" class="nav-link"> <i class="nav-icon fas fa-file-invoice-dollar"></i> 
                             <p>Sales/Invoices</p>

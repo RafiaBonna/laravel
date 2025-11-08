@@ -18,6 +18,10 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+            
+            // ✅ CRITICAL FIX: এখানে status কলামটি যুক্ত করা হলো
+            $table->enum('status', ['active', 'inactive'])->default('active')->index(); 
+            
             $table->timestamps();
         });
 
