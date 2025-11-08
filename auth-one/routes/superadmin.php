@@ -18,7 +18,7 @@ Route::prefix('superadmin')->group(function () {
         // ADMINISTRATION
         Route::resource('/users', UserController::class)->names('superadmin.users');
 
-        // --- INVENTORY / SETTINGS ---
+        // --- SETTINGS ---
         // ✅ Supplier Management Resource Route
         // আমরা Settings মেনুর অধীনে রাখলেও রুট-এর নাম সহজ রাখছি: superadmin.suppliers.*
         Route::resource('/suppliers', SupplierController::class)->names('superadmin.suppliers'); 
