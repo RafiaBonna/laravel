@@ -1,27 +1,37 @@
 <?php
 
-// routes/superadmin.php
-
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Superadmin\SuperadminDashboardController;
 use App\Http\Controllers\Superadmin\UserController;
-use App\Http\Controllers\Superadmin\SupplierController; // ✅ SupplierController আমদানি করা হয়েছে
+use App\Http\Controllers\Superadmin\SupplierController;
+use App\Http\Controllers\Superadmin\DepoListController; // ✅ DepoListController যুক্ত করা হয়েছে
 
-use Illuminate\Support\Facades\Route;
+/*
+|--------------------------------------------------------------------------
+| Superadmin Routes
+|--------------------------------------------------------------------------
+| Prefix: superadmin
+| Middleware: auth, role:superadmin
+|--------------------------------------------------------------------------
+*/
+Route::prefix('superadmin')->middleware(['auth', 'role:superadmin'])->group(function () {
 
-// All Superadmin Routes (Prefix: superadmin)
-Route::prefix('superadmin')->group(function () {
-    Route::middleware(['auth', 'role:superadmin'])->group(function () {
-        
-        // Dashboard
-        Route::get('/dashboard', [SuperadminDashboardController::class, 'index'])->name('superadmin.dashboard');
+    // 🏠 Dashboard Route
+    Route::get('/dashboard', [SuperadminDashboardController::class, 'index'])
+        ->name('superadmin.dashboard');
 
-        // ADMINISTRATION
-        Route::resource('/users', UserController::class)->names('superadmin.users');
+    // 👥 User Management (CRUD)
+    // Route name prefix → superadmin.users.*
+    Route::resource('/users', UserController::class)
+        ->names('superadmin.users');
 
-        // --- INVENTORY / SETTINGS ---
-        // ✅ Supplier Management Resource Route
-        // রুট-এর নাম: superadmin.suppliers.*
-        Route::resource('/suppliers', SupplierController::class)->names('superadmin.suppliers'); 
-     
-    });
+    // 🏭 Supplier Management (CRUD)
+    // Route name prefix → superadmin.suppliers.*
+    Route::resource('/suppliers', SupplierController::class)
+        ->names('superadmin.suppliers');
+
+    // 🏬 Depo Management (List only)
+    // ✅ এই রুটটাই এরর ঠিক করবে
+    Route::get('/depo', [DepoListController::class, 'index'])
+        ->name('superadmin.depo.index');
 });
