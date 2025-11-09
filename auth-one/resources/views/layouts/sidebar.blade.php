@@ -11,7 +11,7 @@
         {{-- User Info --}}
         <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center border-bottom">
             <div class="image">
-                <img src="{{ asset('admin/dist/img/user.png') }}" class="img-circle elevation-2" alt="User">
+                <img src="{{ asset('admin/dist/img/photo3.jpg') }}" class="img-circle elevation-2" alt="User">
             </div>
             <div class="info">
                 <a href="#" class="d-block fw-semibold text-white">
@@ -48,10 +48,73 @@
                             <p>User Management</p>
                         </a>
                     </li>
+                    
+                    {{-- 📦 Raw Material Section (NEWLY ADDED) --}}
+                    <?php
+                        $rawMaterialRoutes = [
+                            'superadmin.raw-materials.*', 
+                            'superadmin.raw-material-purchases.*',
+                            'superadmin.raw-material-stock-out.*',
+                            'superadmin.raw-material-stock.index',
+                            'superadmin.wastage.*'
+                        ];
+                        $isRawMaterialActive = in_array(true, array_map(fn($route) => request()->routeIs($route), $rawMaterialRoutes));
+                    ?>
+                    
+                    <li class="nav-item {{ $isRawMaterialActive ? 'menu-open' : '' }}">
+                        <a href="#" class="nav-link {{ $isRawMaterialActive ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-boxes"></i>
+                            <p>Raw Material <i class="right fas fa-angle-left"></i></p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            {{-- ✅ Material List Sub-Menu --}}
+                            <li class="nav-item">
+                                <a href="{{ route('superadmin.raw-materials.index') }}"
+                                   class="nav-link {{ request()->routeIs('superadmin.raw-materials.*') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Material List</p>
+                                </a>
+                            </li>
+                            {{-- Stock In Sub-menus (Placeholder) --}}
+                            <li class="nav-item">
+                                <a href="{{ route('superadmin.raw-material-purchases.create') }}" class="nav-link {{ request()->routeIs('superadmin.raw-material-purchases.create') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Stock In (Purchase)</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('superadmin.raw-material-purchases.index') }}" class="nav-link {{ request()->routeIs('superadmin.raw-material-purchases.index') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Stock In Invoice</p>
+                                </a>
+                            </li>
+                            {{-- Stock Out Sub-menus (Placeholder) --}}
+                            <li class="nav-item">
+                                <a href="{{ route('superadmin.raw-material-stock-out.create') }}" class="nav-link {{ request()->routeIs('superadmin.raw-material-stock-out.create') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Stock Out (Issue)</p>
+                                </a>
+                            </li>
+                            {{-- Stock Report & Wastage (Placeholder) --}}
+                            <li class="nav-item">
+                                <a href="{{ route('superadmin.raw-material-stock.index') }}" class="nav-link {{ request()->routeIs('superadmin.raw-material-stock.index') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Stock Report</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('superadmin.wastage.index') }}" class="nav-link {{ request()->routeIs('superadmin.wastage.*') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Wastage Entry/List</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
 
                     {{-- Settings Section --}}
                     <?php
-                        $settingsRoutes = ['superadmin.suppliers.*', 'superadmin.depos.*'];
+                        $settingsRoutes = ['superadmin.suppliers.*', 'superadmin.depo.index']; // Note: 'superadmin.depos.*' was changed to 'superadmin.depo.index' based on superadmin.php route
                         $isSettingsActive = in_array(true, array_map(fn($route) => request()->routeIs($route), $settingsRoutes));
                     ?>
 
@@ -69,7 +132,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('superadmin.depo.index') }}" class="nav-link">
+                                <a href="{{ route('superadmin.depo.index') }}" class="nav-link {{ request()->routeIs('superadmin.depo.index') ? 'active' : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Depo List</p>
                                 </a>
