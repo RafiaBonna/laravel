@@ -41,7 +41,8 @@
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
           <a href="#" class="dropdown-item">
             <div class="media">
-              <img src="admin/dist/img/user1-128x128.jpg" alt="User Avatar" class="img-size-50 mr-3 img-circle">
+              {{-- ✅ FIXED: Using asset() helper for correct path --}}
+              <img src="{{ asset('admin/dist/img/user1-128x128.jpg') }}" alt="User Avatar" class="img-size-50 mr-3 img-circle">
               <div class="media-body">
                 <h3 class="dropdown-item-title">
                   Brad Diesel
@@ -55,7 +56,8 @@
           <div class="dropdown-divider"></div>
           <a href="#" class="dropdown-item">
             <div class="media">
-              <img src="admin/dist/img/user8-128x128.jpg" alt="User Avatar" class="img-size-50 img-circle mr-3">
+              {{-- ✅ FIXED: Using asset() helper for user8-128x128.jpg --}}
+              <img src="{{ asset('admin/dist/img/user8-128x128.jpg') }}" alt="User Avatar" class="img-size-50 img-circle mr-3">
               <div class="media-body">
                 <h3 class="dropdown-item-title">
                   John Pierce
@@ -69,7 +71,8 @@
           <div class="dropdown-divider"></div>
           <a href="#" class="dropdown-item">
             <div class="media">
-              <img src="admin/dist/img/user3-128x128.jpg" alt="User Avatar" class="img-size-50 img-circle mr-3">
+              {{-- ✅ FIXED: Using asset() helper for user3-128x128.jpg --}}
+              <img src="{{ asset('admin/dist/img/user3-128x128.jpg') }}" alt="User Avatar" class="img-size-50 img-circle mr-3">
               <div class="media-body">
                 <h3 class="dropdown-item-title">
                   Nora Silvester
@@ -116,18 +119,18 @@
         </a>
       </li>
       
-      {{-- ⭐ LOGOUT OPTION ADDED HERE ⭐ --}}
+      {{-- ⭐ LOGOUT OPTION ADDED HERE ⭐--}}
       <li class="nav-item">
-          {{-- এটিই আপনার লগআউট ফর্ম। এটি POST রিকোয়েস্ট পাঠাবে --}}
+          {{-- এটিই আপনার লগআউট ফর্ম। এটি POST রিকোয়েস্ট পাঠাবে--}}
           <form method="POST" action="{{ route('logout') }}" style="display: none;" id="logout-form">
               @csrf
           </form>
-          {{-- ব্যবহারকারীরা এই লিঙ্ক-এ ক্লিক করবেন, যা ফর্মটি সাবমিট করবে --}}
+          {{-- ব্যবহারকারীরা এই লিঙ্ক-এ ক্লিক করবেন, যা ফর্মটি সাবমিট করবে--}}
           <a class="nav-link" href="#" role="button" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
               <i class="fas fa-sign-out-alt"></i>
           </a>
       </li>
-      {{-- ⭐ END LOGOUT OPTION ⭐ --}}
+      {{-- ⭐ END LOGOUT OPTION ⭐--}}
       
       <li class="nav-item">
         <a class="nav-link" data-widget="control-sidebar" data-controlsidebar-slide="true" href="#" role="button">
