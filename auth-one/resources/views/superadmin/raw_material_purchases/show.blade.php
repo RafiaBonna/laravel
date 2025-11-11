@@ -14,39 +14,44 @@
                 </button>
             </div>
         </div>
-        <div class="card-body" id="invoice-body">
+        <div class="card-body p-5" id="invoice-body">
             
-            {{-- INVOICE HEADER (Master Data) --}}
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <p class="font-weight-bold mb-1">Supplier Details:</p>
-                    <p class="mb-0"><strong>Name:</strong> {{ $invoice->supplier->name ?? 'N/A' }}</p>
-                    <p class="mb-0"><strong>Address:</strong> {{ $invoice->supplier->address ?? 'N/A' }}</p>
-                    <p class="mb-0"><strong>Phone:</strong> {{ $invoice->supplier->phone ?? 'N/A' }}</p>
+            {{-- INVOICE HEADER: Company/Title (Updated Name) --}}
+            <div class="text-center mb-5">
+                <h1 class="font-weight-bold text-dark mb-1">OPTICHAIN SOLUTIONS</h1>
+                <p class="text-muted">RAW MATERIAL PURCHASE INVOICE</p>
+                <hr style="border-top: 3px solid #343a40;"> {{-- Dark line for separation --}}
+            </div>
+
+            {{-- MASTER DATA: Supplier and Invoice Info --}}
+            <div class="row mb-5">
+                <div class="col-6">
+                    <p class="font-weight-bold text-dark mb-2 border-bottom pb-1">Supplier Details:</p>
+                    <p class="mb-1"><strong>Name:</strong> {{ $invoice->supplier->name ?? 'N/A' }}</p>
+                    <p class="mb-1"><strong>Address:</strong> {{ $invoice->supplier->address ?? 'N/A' }}</p>
+                    <p class="mb-1"><strong>Phone:</strong> {{ $invoice->supplier->phone ?? 'N/A' }}</p>
                 </div>
-                <div class="col-md-6 text-md-right">
-                    <p class="font-weight-bold mb-1">Invoice Info:</p>
-                    <p class="mb-0"><strong>Invoice No:</strong> <span class="text-danger">{{ $invoice->invoice_number }}</span></p>
-                    <p class="mb-0"><strong>Date:</strong> {{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d F, Y') }}</p>
-                    <p class="mb-0"><strong>Recorded By:</strong> {{ $invoice->user->name ?? 'N/A' }}</p>
+                <div class="col-6 text-right">
+                    <p class="font-weight-bold text-dark mb-2 border-bottom pb-1">Invoice Info:</p>
+                    <p class="mb-1"><strong>Invoice No:</strong> <span class="text-primary font-weight-bold">{{ $invoice->invoice_number }}</span></p>
+                    <p class="mb-1"><strong>Date:</strong> {{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d F, Y') }}</p>
+                    <p class="mb-1"><strong>Recorded By:</strong> {{ $invoice->user->name ?? 'N/A' }}</p>
                 </div>
             </div>
 
-            <hr>
-
             {{-- PURCHASE ITEMS TABLE --}}
-            <h6 class="font-weight-bold text-primary">Purchased Items</h6>
+            <h6 class="font-weight-bold text-dark mb-3">Purchased Items</h6>
             <div class="table-responsive">
-                <table class="table table-bordered table-sm">
-                    <thead>
+                <table class="table table-bordered table-sm" width="100%" cellspacing="0">
+                    <thead class="bg-secondary text-white">
                         <tr>
-                            <th>#</th>
+                            <th style="width: 5%;">#</th>
                             <th>Material</th>
                             <th>Unit</th>
                             <th>Batch No.</th>
-                            <th class="text-right">Quantity</th>
-                            <th class="text-right">Unit Price</th>
-                            <th class="text-right">Total Price</th>
+                            <th class="text-right" style="width: 15%;">Quantity</th>
+                            <th class="text-right" style="width: 15%;">Unit Price</th>
+                            <th class="text-right" style="width: 15%;">Total Price</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -67,21 +72,22 @@
             </div>
 
             {{-- SUMMARY --}}
-            <div class="row justify-content-end">
+            <div class="row justify-content-end mt-4">
                 <div class="col-md-5">
-                    <table class="table table-sm table-borderless table-dark">
+                    <table class="table table-sm table-borderless float-right">
                         <tbody>
                             <tr>
-                                <td class="font-weight-bold">Sub Total:</td>
+                                <td class="font-weight-bold text-right pr-4">Sub Total:</td>
                                 <td class="text-right">{{ number_format($invoice->sub_total, 2) }}</td>
                             </tr>
                             <tr>
-                                <td class="font-weight-bold">Discount:</td>
+                                <td class="font-weight-bold text-right pr-4">Discount:</td>
                                 <td class="text-right text-danger">- {{ number_format($invoice->discount_amount, 2) }}</td>
                             </tr>
-                            <tr>
-                                <td class="font-weight-bold h5">GRAND TOTAL:</td>
-                                <td class="text-right font-weight-bold h5">BDT {{ number_format($invoice->grand_total, 2) }}</td>
+                            {{-- Grand Total Highlighted --}}
+                            <tr class="bg-primary text-white font-weight-bold h5">
+                                <td class="text-right pr-4 pt-2 pb-2">GRAND TOTAL:</td>
+                                <td class="text-right pt-2 pb-2">BDT {{ number_format($invoice->grand_total, 2) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -95,6 +101,9 @@
                 <p class="border p-2 bg-light">{{ $invoice->notes }}</p>
             </div>
             @endif
+            
+            {{-- REMOVED: Signature and Stamp Area as requested --}}
+
 
         </div>
     </div>
@@ -104,14 +113,27 @@
 @push('styles')
 <style>
     @media print {
-        .main-sidebar, .main-header, .content-header, .btn, .card-header button {
+        /* Hide unnecessary elements during print */
+        .main-sidebar, .main-header, .content-header, .btn, .card-header {
             display: none !important;
         }
         .content-wrapper {
             margin-left: 0 !important;
         }
         .card-body {
-            padding-top: 0 !important;
+            /* Remove card padding for full print area */
+            padding: 0 !important; 
+        }
+        .card {
+            border: none !important;
+            box-shadow: none !important;
+        }
+        /* Ensure primary color prints correctly (dark grey/black) */
+        .bg-primary {
+            background-color: #000000 !important; /* Forces black on print */
+            color: #ffffff !important;
+            -webkit-print-color-adjust: exact;
+            color-adjust: exact; 
         }
     }
 </style>

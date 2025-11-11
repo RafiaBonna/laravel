@@ -32,13 +32,14 @@ class RawMaterialPurchaseController extends Controller
     // 💾 3. Store Purchase
     public function store(Request $request)
     {
+        // === FIX: Removed strict 'same:calculated_total' validation to avoid floating-point errors ===
         $request->validate([
             'invoice_number' => 'required|string|max:255|unique:purchase_invoices,invoice_number',
             'invoice_date' => 'required|date',
             'supplier_id' => 'required|exists:suppliers,id',
             'discount_amount' => 'nullable|numeric|min:0',
-            'grand_total' => 'required|numeric|min:0',
-            'calculated_total' => 'required|numeric|same:grand_total',
+            'grand_total' => 'required|numeric|gt:0', // Ensure grand total is greater than 0
+            'calculated_total' => 'required|numeric', // Keep calculated total check for logic
             'items' => 'required|array|min:1',
             'items.*.raw_material_id' => 'nullable|exists:raw_materials,id',
             'items.*.new_material_name' => 'nullable|string|max:255',
@@ -49,9 +50,21 @@ class RawMaterialPurchaseController extends Controller
             'items.*.total_price' => 'required|numeric|min:0',
         ]);
 
+        // === Manual check for grand total consistency (safer than 'same' rule) ===
+        $subTotalFromItems = collect($request->items)->sum('total_price');
+        $calculatedGrandTotal = $subTotalFromItems - ($request->discount_amount ?? 0);
+
+        // Check if the difference is negligible (e.g., within 2 decimal places)
+        if (abs($calculatedGrandTotal - $request->grand_total) > 0.01) {
+             return back()->with('error', 'Validation Error: Grand Total calculation mismatch. Please re-check the item totals and discount.')
+                          ->withInput();
+        }
+
+
         DB::beginTransaction();
         try {
-            $subTotal = collect($request->items)->sum('total_price');
+            // $subTotal is now $subTotalFromItems, calculated server-side for safety
+            $subTotal = $subTotalFromItems;
 
             // Create Purchase Invoice
             $invoice = PurchaseInvoice::create([
@@ -77,6 +90,12 @@ class RawMaterialPurchaseController extends Controller
                     ]);
                     $itemData['raw_material_id'] = $rawMaterial->id;
                 }
+                
+                // === New material check for validation failure if both are empty ===
+                if (empty($itemData['raw_material_id'])) {
+                    DB::rollBack();
+                    return back()->with('error', 'Error: Raw Material must be selected or a New Material Name must be provided for all items.')->withInput();
+                }
 
                 // Create purchase item
                 $item = RawMaterialPurchaseItem::create([
@@ -97,7 +116,8 @@ class RawMaterialPurchaseController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Error: ' . $e->getMessage())->withInput();
+            // === IMPROVEMENT: Return the detailed error to the user for debugging ===
+            return back()->with('error', 'Transaction Error: ' . $e->getMessage() . ' on line ' . $e->getLine())->withInput();
         }
     }
 
