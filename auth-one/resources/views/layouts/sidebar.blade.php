@@ -38,10 +38,9 @@
 
                 {{-- ================= Superadmin Section ================= --}}
                 @if (Auth::user()->hasRole('superadmin'))
-                    <li class="nav-header text-uppercase text-sm text-secondary mt-3 mb-1">Administration</li>
-
-                    {{-- User Management --}}
-                    <li class="nav-item mb-1">
+                    {{-- Administration/User Management --}}
+                    {{-- Header Removed --}}
+                    <li class="nav-item mb-1 mt-3"> {{-- Added mt-3 for spacing from Dashboard --}}
                         <a href="{{ route('superadmin.users.index') }}"
                            class="nav-link {{ request()->routeIs('superadmin.users.*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-users"></i>
@@ -49,7 +48,7 @@
                         </a>
                     </li>
                     
-                    {{-- 📦 Raw Material Section (NEWLY ADDED) --}}
+                    {{-- 📦 Raw Material Section (Treeview) --}}
                     <?php
                         $rawMaterialRoutes = [
                             'superadmin.raw-materials.*', 
@@ -61,13 +60,13 @@
                         $isRawMaterialActive = in_array(true, array_map(fn($route) => request()->routeIs($route), $rawMaterialRoutes));
                     ?>
                     
-                    <li class="nav-item {{ $isRawMaterialActive ? 'menu-open' : '' }}">
+                    <li class="nav-item {{ $isRawMaterialActive ? 'menu-open' : '' }} mt-3"> {{-- Added mt-3 for spacing --}}
                         <a href="#" class="nav-link {{ $isRawMaterialActive ? 'active' : '' }}">
                             <i class="nav-icon fas fa-boxes"></i>
                             <p>Raw Material <i class="right fas fa-angle-left"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
-                            {{-- ✅ Material List Sub-Menu --}}
+                            {{-- Material List Sub-Menu --}}
                             <li class="nav-item">
                                 <a href="{{ route('superadmin.raw-materials.index') }}"
                                    class="nav-link {{ request()->routeIs('superadmin.raw-materials.*') ? 'active' : '' }}">
@@ -75,7 +74,7 @@
                                     <p>Material List</p>
                                 </a>
                             </li>
-                            {{-- Stock In Sub-menus (Placeholder) --}}
+                            {{-- Stock In Sub-menus --}}
                             <li class="nav-item">
                                 <a href="{{ route('superadmin.raw-material-purchases.create') }}" class="nav-link {{ request()->routeIs('superadmin.raw-material-purchases.create') ? 'active' : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
@@ -88,14 +87,14 @@
                                     <p>Stock In Invoice</p>
                                 </a>
                             </li>
-                            {{-- Stock Out Sub-menus (Placeholder) --}}
+                            {{-- Stock Out Sub-menus (NEW) --}}
                             <li class="nav-item">
                                 <a href="{{ route('superadmin.raw-material-stock-out.create') }}" class="nav-link {{ request()->routeIs('superadmin.raw-material-stock-out.create') ? 'active' : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Stock Out (Issue)</p>
                                 </a>
                             </li>
-                            {{-- Stock Report & Wastage (Placeholder) --}}
+                            {{-- Stock Report & Wastage (NEW) --}}
                             <li class="nav-item">
                                 <a href="{{ route('superadmin.raw-material-stock.index') }}" class="nav-link {{ request()->routeIs('superadmin.raw-material-stock.index') ? 'active' : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
@@ -111,17 +110,71 @@
                         </ul>
                     </li>
 
-
-                    {{-- Settings Section --}}
+                    {{-- 🏭 PRODUCT MANAGEMENT (NEW BLOCK) --}}
                     <?php
-                        $settingsRoutes = ['superadmin.suppliers.*', 'superadmin.depo.index']; // Note: 'superadmin.depos.*' was changed to 'superadmin.depo.index' based on superadmin.php route
+                        $productRoutes = [
+                            'superadmin.products.*', 
+                            'superadmin.product-receives.*',
+                            'superadmin.product-sales.*',
+                            'superadmin.product-returns.*', 
+                            'superadmin.product-wastage.*' 
+                        ];
+                        $isProductActive = in_array(true, array_map(fn($route) => request()->routeIs($route), $productRoutes));
+                    ?>
+                    <li class="nav-item {{ $isProductActive ? 'menu-open' : '' }} mt-3"> 
+                        <a href="#" class="nav-link {{ $isProductActive ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-boxes-stacked"></i>
+                            <p>Product/Finished Goods <i class="right fas fa-angle-left"></i></p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            {{-- 1. Product List (Product Entry) --}}
+                            <li class="nav-item">
+                                <a href="{{ route('superadmin.products.index') }}" class="nav-link {{ request()->routeIs('superadmin.products.*') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Product List / Entry</p>
+                                </a>
+                            </li>
+                            {{-- 2. Product Receive --}}
+                            <li class="nav-item">
+                                <a href="{{ route('superadmin.product-receives.index') }}" class="nav-link {{ request()->routeIs('superadmin.product-receives.*') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Product Receive (In)</p>
+                                </a>
+                            </li>
+                            {{-- 3. Sales to Depo (Out) --}}
+                            <li class="nav-item">
+                                <a href="{{ route('superadmin.product-sales.index') }}" class="nav-link {{ request()->routeIs('superadmin.product-sales.*') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Sales to Depo (Out)</p>
+                                </a>
+                            </li>
+                            {{-- 4. Product Return --}}
+                            <li class="nav-item">
+                                <a href="#" class="nav-link {{ request()->routeIs('superadmin.product-returns.*') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Product Return List</p>
+                                </a>
+                            </li>
+                            {{-- 5. Product Wastage --}}
+                            <li class="nav-item">
+                                <a href="#" class="nav-link {{ request()->routeIs('superadmin.product-wastage.*') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Wastage List / Entry</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    {{-- ⚙️ Settings Section (Treeview) --}}
+                    <?php
+                        $settingsRoutes = ['superadmin.suppliers.*', 'superadmin.depo.index', 'superadmin.distributor.*'];
                         $isSettingsActive = in_array(true, array_map(fn($route) => request()->routeIs($route), $settingsRoutes));
                     ?>
 
-                    <li class="nav-item {{ $isSettingsActive ? 'menu-open' : '' }}">
+                    <li class="nav-item {{ $isSettingsActive ? 'menu-open' : '' }} mt-3"> {{-- Added mt-3 for spacing --}}
                         <a href="#" class="nav-link {{ $isSettingsActive ? 'active' : '' }}">
                             <i class="nav-icon fas fa-cog"></i>
-                            <p>Settings <i class="right fas fa-angle-left"></i></p>
+                            <p>Master Data Setup <i class="right fas fa-angle-left"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
@@ -137,14 +190,46 @@
                                     <p>Depo List</p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('superadmin.distributor.index') }}" class="nav-link {{ request()->routeIs('superadmin.distributor.*') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Distributor List</p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 @endif
 
                 {{-- ================= Depo Section ================= --}}
                 @if (Auth::user()->hasRole('depo'))
-                    <li class="nav-header text-uppercase text-sm text-secondary mt-3 mb-1">Depo Management</li>
-                    <li class="nav-item mb-1">
+                    {{-- 🚛 Sales Approval Menu (New) --}}
+                    <?php
+                        $invoiceRoutes = ['depo.invoices.*'];
+                        $isInvoiceActive = in_array(true, array_map(fn($route) => request()->routeIs($route), $invoiceRoutes));
+                    ?>
+                    <li class="nav-item {{ $isInvoiceActive ? 'menu-open' : '' }} mt-3">
+                        <a href="#" class="nav-link {{ $isInvoiceActive ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                            <p>Warehouse Invoices <i class="right fas fa-angle-left"></i></p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{ route('depo.invoices.pending') }}" class="nav-link {{ request()->routeIs('depo.invoices.pending') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon text-warning"></i>
+                                    <p>Pending for Approval</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('depo.invoices.index') }}" class="nav-link {{ request()->routeIs('depo.invoices.index') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>All Invoices</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    {{-- Header Removed --}}
+                    <li class="nav-item mb-1 mt-3"> {{-- Added mt-3 for spacing --}}
                         <a href="{{ route('depo.users.index') }}"
                            class="nav-link {{ request()->routeIs('depo.users.*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-users"></i>
@@ -155,8 +240,8 @@
 
                 {{-- ================= Distributor Section ================= --}}
                 @if (Auth::user()->hasRole('distributor'))
-                    <li class="nav-header text-uppercase text-sm text-secondary mt-3 mb-1">Distributor Panel</li>
-                    <li class="nav-item mb-1">
+                    {{-- Header Removed --}}
+                    <li class="nav-item mb-1 mt-3"> {{-- Added mt-3 for spacing --}}
                         <a href="#" class="nav-link">
                             <i class="nav-icon fas fa-user-friends"></i>
                             <p>Customer List</p>
@@ -165,8 +250,8 @@
                 @endif
 
                 {{-- ================= Logout ================= --}}
-                <li class="nav-header text-uppercase text-sm text-secondary mt-4 mb-1">Account</li>
-                <li class="nav-item">
+                {{-- Header Removed --}}
+                <li class="nav-item mt-4"> {{-- Used mt-4 for clear separation --}}
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <a href="{{ route('logout') }}" class="nav-link text-danger"
@@ -192,6 +277,7 @@
         color: #fff !important;
     }
     .nav-header {
+        /* This section is no longer needed but kept for style reference */
         letter-spacing: .5px;
         font-weight: 600;
     }

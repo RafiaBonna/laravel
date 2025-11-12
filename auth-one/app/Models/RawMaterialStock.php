@@ -13,8 +13,16 @@ class RawMaterialStock extends Model
         'average_purchase_price', 'last_in_date'
     ];
     
-    // DB::raw ব্যবহার করার জন্য এটি দরকার
-    protected $guarded = []; 
+    // protected $guarded = []; // Fillable ব্যবহার করা হয়েছে, তাই এটি দরকার নেই
 
-    public function rawMaterial() { return $this->belongsTo(RawMaterial::class); }
+    public function rawMaterial() { 
+        return $this->belongsTo(RawMaterial::class); 
+    }
+
+    // ✅ NEW: Production Issue Items (Stock Out)
+    public function productionIssueItems()
+    {
+        // ProductionIssueItem মডেলে stock_id এর মাধ্যমে সম্পর্ক তৈরি করা হলো
+        return $this->hasMany(ProductionIssueItem::class, 'raw_material_stock_id');
+    }
 }

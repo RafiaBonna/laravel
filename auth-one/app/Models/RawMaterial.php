@@ -18,4 +18,13 @@ class RawMaterial extends Model
     {
         return $this->hasMany(RawMaterialPurchaseItem::class);
     }
+
+    /**
+     * কাঁচামালের সাথে সংশ্লিষ্ট সমস্ত স্টক/ব্যাচ (RawMaterialStock) রিলেশনশিপ।
+     * এই মেথডটি RawMaterialStockOutController-এর ত্রুটি ঠিক করবে।
+     */
+    public function stocks()
+    {
+        return $this->hasMany(RawMaterialStock::class);
+    }
 }
