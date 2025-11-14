@@ -43,37 +43,40 @@ class ProductReceiveController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+      $validator = Validator::make($request->all(), [
+            'receive_no' => 'required|string|max:100|unique:product_receives,receive_no',
             'receive_date' => 'required|date',
-            'note' => 'nullable|string|max:500',
-            'items' => 'required|array',
+            'note' => 'nullable|string',
+            // items[] array validation
+            'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.batch_no' => 'required|string|max:100',
-            'items.*.received_quantity' => 'required|numeric|min:0.01',
-            'items.*.expiry_date' => 'nullable|date',
+            // 🎯 Qty Validation: Qty অবশ্যই 0.01 বা তার বেশি হতে হবে
+            'items.*.received_quantity' => 'required|numeric|min:0.01', 
+            'items.*.cost_rate' => 'required|numeric|min:0', // Cost rate-কে required করা হলো
+            'items.*.production_date' => 'nullable|date',
+            'items.*.expiry_date' => 'nullable|date|after:production_date',
         ]);
-
+        
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
-
-        // DB Transaction for Stock Safety
+        
         DB::beginTransaction();
         try {
-            $totalQty = collect($request->items)->sum('received_quantity');
+            // total_received_qty হিসাব
+            $totalReceivedQty = array_sum(array_column($request->items, 'received_quantity'));
 
-            // 1. Save Product Receive Header
             $receive = ProductReceive::create([
-                'receive_no' => $request->receive_no ?? ('PR-' . now()->format('YmdHis')), // ফলব্যাক নম্বর
+                'receive_no' => $request->receive_no,
                 'receive_date' => $request->receive_date,
                 'note' => $request->note,
-                'total_received_qty' => $totalQty,
-                'received_by_user_id' => Auth::id(),
+                'total_received_qty' => $totalReceivedQty,
+                'received_by_user_id' => Auth::id(), 
             ]);
 
-            // 2. Process Items and Update Stock
             foreach ($request->items as $item) {
-                // Save Product Receive Item
+                // ProductReceiveItem সেভ করা
                 ProductReceiveItem::create([
                     'product_receive_id' => $receive->id,
                     'product_id' => $item['product_id'],
@@ -116,6 +119,40 @@ class ProductReceiveController extends Controller
             return back()->with('error', 'Failed to complete Product Receive. Transaction aborted.')->withInput();
         }
     }
+    
+    /**
+     * AJAX/API কলের জন্য নতুন আইটেম রো-এর HTML কন্টেন্ট এনে দেয়
+     */
+    public function getItemRow(Request $request)
+    {
+        // JS থেকে itemIndex নেওয়া হলো
+        $i = $request->input('i'); 
+        
+        // Product ডেটা ফেচ করা
+        $products = Product::where('is_active', true)->pluck('name', 'id');
+        
+        // receive_item_row.blade.php ফাইলটি রেন্ডার করা হলো
+        return view('superadmin.product_receives.partials.receive_item_row', compact('i', 'products'))->render();
+    }
+
+    // app/Http/Controllers/Superadmin/ProductReceiveController.php
+
+// ... (অন্যান্য মেথড যেমন index, create, store, getItemRow এর পরে যোগ করুন) ...
+
+    /**
+     * Display the specified product receive invoice.
+     * এই মেথডটি ইনভয়েসের বিস্তারিত দেখানোর জন্য ব্যবহৃত হয়।
+     */
+    public function show(ProductReceive $productReceive)
+    {
+        // 🎯 FIX: 'receiver', 'items', এবং 'items.product' রিলেশনশিপ লোড করা হলো
+        // যাতে ব্লেড ফাইলে সহজেই সমস্ত ডেটা অ্যাক্সেস করা যায়।
+        $receive = $productReceive->load(['receiver', 'items.product']);
+
+        // নতুন ব্লেড ফাইল 'superadmin/product_receives/show.blade.php' কে ডেটা পাঠানো হলো।
+        return view('superadmin.product_receives.show', compact('receive'));
+    }
+
     
     // show(), edit(), update(), destroy() ফাংশনগুলো পরে যোগ করা যাবে...
 }

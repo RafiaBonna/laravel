@@ -35,7 +35,7 @@ Route::prefix('superadmin')->middleware(['auth', 'role:superadmin'])->group(func
         ->names('superadmin.users');
 
     // ------------------------------------------
-    // 📦 RAW MATERIAL MANAGEMENT (EXISTING SECTION)
+    // 📦 RAW MATERIAL MANAGEMENT
     // ------------------------------------------
     
     // 1. Raw Material List (CRUD)
@@ -64,18 +64,29 @@ Route::prefix('superadmin')->middleware(['auth', 'role:superadmin'])->group(func
 
 
     // ------------------------------------------
-    // 🏭 PRODUCT MANAGEMENT (NEW SECTION)
+    // 🏭 PRODUCT MANAGEMENT
     // ------------------------------------------
 
-    // 1. Product List (CRUD) - Jeta Product Entry hisebe kaj korbe
+    // 1. Product List (CRUD) - Product Entry
     Route::resource('/products', ProductController::class)
-        ->names('superadmin.products'); // Route name prefix → superadmin.products.*
+        ->names('superadmin.products'); 
 
+    // ✅ API: প্রোডাক্ট রেট লোড করার জন্য
+    Route::get('api/products/rates/{id}', [ProductController::class, 'getRates'])
+        ->name('superadmin.api.products.rates'); 
+        
     // 2. Product Receive (Karkhana theke warehouse a asha) - Multi Product Add
     Route::prefix('product-receives')->controller(ProductReceiveController::class)->name('superadmin.product-receives.')->group(function () {
         Route::get('/', 'index')->name('index'); // Product Receive List
         Route::get('/create', 'create')->name('create'); // Product Receive Form
         Route::post('/', 'store')->name('store'); // Save Receive Data
+        
+        // 🎯 ফিক্সড রুট: নতুন রো লোড করার জন্য (এটিই আপনার এরর ঠিক করবে)
+        Route::get('get-item-row', 'getItemRow')->name('get-item-row'); 
+
+        // ✅ ADDED: Show/View Route
+        Route::get('/{productReceive}', 'show')->name('show');
+        
         // View, Edit, Delete পরে যোগ করা যাবে
     });
     
@@ -108,6 +119,10 @@ Route::prefix('superadmin')->middleware(['auth', 'role:superadmin'])->group(func
     // 🚚 Distributor Management (List only)
     Route::get('/distributor', [DepoListController::class, 'index'])
         ->name('superadmin.distributor.index'); 
-    
-    // ------------------------------------------
 });
+
+// এই অংশটি Superadmin রুটের গ্রুপের মধ্যে থাকার কথা ছিল, 
+// আমি এটিকে উপরের PRODUCT MANAGEMENT সেকশনে সঠিক জায়গায় (প্রোডাক্ট রিসোর্সের নিচে) সরিয়ে দিয়েছি।
+// আপনার ফাইলের শেষে যদি এটি থাকে, তাহলে এটি মুছে দিন, কারণ এটি এখন উপরে ঠিক করা হয়েছে।
+// Route::get('api/products/rates/{id}', [App\Http\Controllers\Superadmin\ProductController::class, 'getRates'])
+// ->name('superadmin.api.products.rates');

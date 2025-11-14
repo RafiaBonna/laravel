@@ -123,7 +123,7 @@
                     ?>
                     <li class="nav-item {{ $isProductActive ? 'menu-open' : '' }} mt-3"> 
                         <a href="#" class="nav-link {{ $isProductActive ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-boxes-stacked"></i>
+                            <i class="nav-icon fas fa-cube"></i>
                             <p>Product/Finished Goods <i class="right fas fa-angle-left"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
@@ -174,7 +174,7 @@
                     <li class="nav-item {{ $isSettingsActive ? 'menu-open' : '' }} mt-3"> {{-- Added mt-3 for spacing --}}
                         <a href="#" class="nav-link {{ $isSettingsActive ? 'active' : '' }}">
                             <i class="nav-icon fas fa-cog"></i>
-                            <p>Master Data Setup <i class="right fas fa-angle-left"></i></p>
+                            <p>Settings<i class="right fas fa-angle-left"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">

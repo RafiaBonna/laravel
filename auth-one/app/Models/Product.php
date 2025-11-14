@@ -1,5 +1,4 @@
 <?php
-
 // app/Models/Product.php
 
 namespace App\Models;
@@ -17,6 +16,13 @@ class Product extends Model
         'name',
         'sku',
         'unit',
+        
+        // 🎯 নতুন যোগ করা রেট ফিল্ডগুলো (Controller-এ ব্যবহৃত)
+        'mrp',
+        'retail_rate',
+        'depo_selling_price',
+        'distributor_rate',
+        
         'current_stock',
         'description',
         'is_active',
@@ -28,6 +34,7 @@ class Product extends Model
      */
     public function stocks(): HasMany
     {
+        // নিশ্চিত করুন যে ProductStock মডেলটি আছে
         return $this->hasMany(ProductStock::class);
     }
 
@@ -36,6 +43,7 @@ class Product extends Model
      */
     public function creator(): BelongsTo
     {
+        // নিশ্চিত করুন যে User মডেলটি আছে
         return $this->belongsTo(User::class, 'created_by');
     }
 }

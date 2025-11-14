@@ -1,7 +1,7 @@
 {{-- resources/views/superadmin/product_receives/index.blade.php --}}
 
 @extends('master') 
-{{-- ধরে নিলাম আপনার main layout ফাইলটি layouts/app.blade.php --}}
+{{-- ধরে নিলাম আপনার main layout ফাইলটি 'master.blade.php' --}}
 
 @section('content')
 <div class="container-fluid">
@@ -17,47 +17,64 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    {{-- ✅ মেসেজ ডিসপ্লে --}}
                     @if(session('success'))
-                        <div class="alert alert-success">{{ session('success') }}</div>
+                        <div class="alert alert-success">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    @if(session('error'))
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            {{ session('error') }}
+                        </div>
                     @endif
 
-                    <table id="receiveTable" class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>SL</th>
-                                <th>Receive No</th>
-                                <th>Receive Date</th>
-                                <th>Total Qty</th>
-                                <th>Received By</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($receives as $receive)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $receive->receive_no }}</td>
-                                <td>{{ \Carbon\Carbon::parse($receive->receive_date)->format('d-M-Y') }}</td>
-                                <td>{{ number_format($receive->total_received_qty, 2) }}</td>
-                                <td>{{ $receive->receiver->name ?? 'N/A' }}</td>
-                                <td>
-                                    {{-- View Button --}}
-                                    <a href="#" class="btn btn-info btn-sm" title="View Details">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    {{-- Edit/Delete (Optional, as stock transactions are sensitive) --}}
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    {{-- টেবিলকে রেসপনসিভ করার জন্য table-responsive ব্যবহার করা হলো --}}
+                    <div class="table-responsive"> 
+                        <table id="receiveTable" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">SL</th>
+                                    <th>Receive No (ইনভয়েস)</th>
+                                    <th>Receive Date</th>
+                                    <th>Total Qty</th>
+                                    <th>Received By</th>
+                                    <th style="width: 80px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($receives as $receive)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td><span class="badge badge-info">{{ $receive->receive_no }}</span></td>
+                                    <td>{{ \Carbon\Carbon::parse($receive->receive_date)->format('d-M-Y') }}</td>
+                                    <td>{{ number_format($receive->total_received_qty, 2) }}</td>
+                                    <td>{{ $receive->receiver->name ?? 'N/A' }}</td>
+                                    <td>
+                                        {{-- View Button (Fixed) --}}
+                                        <a href="{{ route('superadmin.product-receives.show', $receive->id) }}" class="btn btn-info btn-sm" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                @endforeach
+                                @if($receives->isEmpty())
+                                    <tr>
+                                        <td colspan="6" class="text-center">No product receive entries found.</td>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div> {{-- Closes .table-responsive --}}
 
                     <div class="mt-3">
                         {{ $receives->links() }}
                     </div>
-                </div>
-                </div>
-            </div>
-    </div>
-</div>
+                </div> {{-- Closes .card-body --}}
+            </div> {{-- Closes .card (অতিরিক্ত div টি সরানো হয়েছে) --}}
+        </div> {{-- Closes .col-12 --}}
+    </div> {{-- Closes .row --}}
+</div> {{-- Closes .container-fluid --}}
 @endsection
