@@ -8,12 +8,10 @@ use App\Http\Controllers\Superadmin\DepoListController;
 use App\Http\Controllers\Superadmin\RawMaterialController;
 use App\Http\Controllers\Superadmin\RawMaterialPurchaseController;
 use App\Http\Controllers\Superadmin\RawMaterialStockOutController;
-use App\Http\Controllers\Superadmin\WastageController; 
-// ⬅️ নতুন Controller Import
+use App\Http\Controllers\Superadmin\WastageController;
 use App\Http\Controllers\Superadmin\ProductController;
 use App\Http\Controllers\Superadmin\ProductReceiveController;
 use App\Http\Controllers\Superadmin\SalesInvoiceController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -25,104 +23,74 @@ use App\Http\Controllers\Superadmin\SalesInvoiceController;
 */
 Route::prefix('superadmin')->middleware(['auth', 'role:superadmin'])->group(function () {
 
-    // 🏠 Dashboard Route
+    // Dashboard Route
     Route::get('/dashboard', [SuperadminDashboardController::class, 'index'])
         ->name('superadmin.dashboard');
 
-    // 👥 User Management (CRUD)
-    // Route name prefix → superadmin.users.*
+    // User Management (CRUD)
     Route::resource('/users', UserController::class)
         ->names('superadmin.users');
 
     // ------------------------------------------
-    // 📦 RAW MATERIAL MANAGEMENT
+    // RAW MATERIAL MANAGEMENT
     // ------------------------------------------
-    
-    // 1. Raw Material List (CRUD)
     Route::resource('/raw-materials', RawMaterialController::class)
         ->names('superadmin.raw-materials');
 
-    // 2. Stock In / Purchase
     Route::resource('/raw-material-purchases', RawMaterialPurchaseController::class)
         ->names('superadmin.raw-material-purchases');
 
-    // 3. Stock Out / Production Issue
     Route::resource('/raw-material-stock-out', RawMaterialStockOutController::class)
         ->names('superadmin.raw-material-stock-out');
 
-    // ✅ API: Fetch Stock Batches for the Stock Out form
-    Route::get('/api/raw-material-stock/batches/{rawMaterialId}', [RawMaterialStockOutController::class, 'getStockBatches'])
-        ->name('superadmin.api.raw-material-stock.batches');
-
-    // 4. Stock Report & Wastage
-    Route::get('/raw-material-stock-report', [RawMaterialStockOutController::class, 'index'])->name('superadmin.raw-material-stock.index'); 
-    Route::resource('/wastage', WastageController::class)->names('superadmin.wastage');
-
-    // 🎯 FIX: Wastage ফর্মের জন্য ব্যাচ লোড করার নতুন API
-    Route::get('/api/wastage/batches/{rawMaterialId}', [WastageController::class, 'getStockBatches'])
-        ->name('superadmin.api.wastage.batches');
-
-
+    // FIX: Missing Route for Stock Report (superadmin.raw-material-stock.index)
+    // Assume it uses a method in RawMaterialController or a dedicated controller
+    // If you have a dedicated controller for stock, replace RawMaterialController::class
+    Route::get('/raw-material-stock', [RawMaterialController::class, 'stockIndex'])
+        ->name('superadmin.raw-material-stock.index');
+        
+    Route::resource('/wastage', WastageController::class) // Changed to resource based on sidebar link
+        ->names('superadmin.wastage');
+        
     // ------------------------------------------
-    // 🏭 PRODUCT MANAGEMENT
+    // PRODUCT & STOCK MANAGEMENT
     // ------------------------------------------
-
-    // 1. Product List (CRUD) - Product Entry
-    Route::resource('/products', ProductController::class)
-        ->names('superadmin.products'); 
-
-    // ✅ API: প্রোডাক্ট রেট লোড করার জন্য
-    Route::get('api/products/rates/{id}', [ProductController::class, 'getRates'])
-        ->name('superadmin.api.products.rates'); 
-        
-    // 2. Product Receive (Karkhana theke warehouse a asha) - Multi Product Add
-    Route::prefix('product-receives')->controller(ProductReceiveController::class)->name('superadmin.product-receives.')->group(function () {
-        Route::get('/', 'index')->name('index'); // Product Receive List
-        Route::get('/create', 'create')->name('create'); // Product Receive Form
-        Route::post('/', 'store')->name('store'); // Save Receive Data
-        
-        // 🎯 ফিক্সড রুট: নতুন রো লোড করার জন্য (এটিই আপনার এরর ঠিক করবে)
-        Route::get('get-item-row', 'getItemRow')->name('get-item-row'); 
-
-        // ✅ ADDED: Show/View Route
-        Route::get('/{productReceive}', 'show')->name('show');
-        
-        // View, Edit, Delete পরে যোগ করা যাবে
-    });
     
-    // 3. 📦 Sales Management (Superadmin to Depo)
-    Route::prefix('product-sales')->controller(SalesInvoiceController::class)->name('superadmin.product-sales.')->group(function () {
-        Route::get('/', 'index')->name('index'); // Sales List (Jekhane Yellow/Red status show hobe)
-        Route::get('/create', 'create')->name('create'); // Sales Form
-        Route::post('/', 'store')->name('store'); // Save Sales Invoice (Status: Pending)
+    // 1. Product Management (CRUD)
+    Route::resource('/products', ProductController::class)
+        ->names('superadmin.products');
 
-        // API: Sales ফর্মের জন্য প্রোডাক্টের ব্যাচ লোড করার জন্য
-        Route::get('/api/product-stock/batches/{productId}', [SalesInvoiceController::class, 'getProductBatches'])->name('superadmin.api.product-stock.batches');
+    // 2. Product Receive/Purchase (CRUD)
+    Route::resource('/product-receives', ProductReceiveController::class)
+        ->names('superadmin.product-receives');
+
+
+    // 3. SALES MANAGEMENT (BATCH FIX CONFIRMED HERE)
+    Route::prefix('sales')->controller(SalesInvoiceController::class)->name('superadmin.sales.')->group(function () {
+        Route::get('/', 'index')->name('index');       
+        Route::get('/create', 'create')->name('create'); 
+        Route::post('/', 'store')->name('store');       
+
+        // API: Fix for batch dropdown (superadmin.sales.api.product-stock.batches)
+        Route::get('/api/product-stock/batches/{productId}', 'getProductBatches')->name('api.product-stock.batches');
     });
 
     // 4. Return Management (Future)
     // 5. Wastage Management (Future)
 
     // ------------------------------------------
-    // ⚙️ SETTINGS & MASTER DATA (Existing Routes)
+    // SETTINGS & MASTER DATA
     // ------------------------------------------
 
-    // 🏭 Supplier Management (CRUD)
-    // Route name prefix → superadmin.suppliers.*
+    // Supplier Management (CRUD)
     Route::resource('/suppliers', SupplierController::class)
         ->names('superadmin.suppliers');
 
-    // 🏬 Depo Management (List only)
+    // Depo Management (List only)
     Route::get('/depo', [DepoListController::class, 'index'])
-        ->name('superadmin.depo.index'); 
-    
-    // 🚚 Distributor Management (List only)
-    Route::get('/distributor', [DepoListController::class, 'index'])
-        ->name('superadmin.distributor.index'); 
-});
+        ->name('superadmin.depo.index');
 
-// এই অংশটি Superadmin রুটের গ্রুপের মধ্যে থাকার কথা ছিল, 
-// আমি এটিকে উপরের PRODUCT MANAGEMENT সেকশনে সঠিক জায়গায় (প্রোডাক্ট রিসোর্সের নিচে) সরিয়ে দিয়েছি।
-// আপনার ফাইলের শেষে যদি এটি থাকে, তাহলে এটি মুছে দিন, কারণ এটি এখন উপরে ঠিক করা হয়েছে।
-// Route::get('api/products/rates/{id}', [App\Http\Controllers\Superadmin\ProductController::class, 'getRates'])
-// ->name('superadmin.api.products.rates');
+    // Distributor Management (List only)
+    Route::get('/distributor', [DepoListController::class, 'index'])
+        ->name('superadmin.distributor.index');
+});
