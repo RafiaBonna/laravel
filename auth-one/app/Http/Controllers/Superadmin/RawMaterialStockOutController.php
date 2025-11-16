@@ -16,9 +16,11 @@ class RawMaterialStockOutController extends Controller
 {
     /**
      * 🔹 Stock Out List
+     * ✅ FIX: This method ensures $stockOuts is passed to the view.
      */
     public function index()
     {
+        // $stockOuts ভেরিয়েবলটি fetching এবং passing করা হচ্ছে।
         $stockOuts = ProductionIssue::with('user')->latest()->paginate(10);
         return view('superadmin.raw_material_stock_out.index', compact('stockOuts'));
     }
@@ -64,64 +66,54 @@ class RawMaterialStockOutController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'slip_number' => [
-                'required', 'string', 'max:255',
-                Rule::unique('production_issues', 'issue_number')
-            ],
+            'slip_number' => ['required', 'string', 'unique:production_issues,issue_number'],
             'issue_date' => 'required|date',
-            'factory_name' => 'nullable|string|max:255',
-            'notes' => 'nullable|string',
-
-            // Items validation
             'items' => 'required|array|min:1',
             'items.*.raw_material_id' => 'required|exists:raw_materials,id',
             'items.*.raw_material_stock_id' => 'required|exists:raw_material_stocks,id',
-            'items.*.batch_number' => 'required|string',
-            'items.*.quantity' => 'required|numeric|min:0.001',
+            'items.*.quantity' => 'required|numeric|min:0.01',
             'items.*.unit_price' => 'required|numeric|min:0',
         ], [
-            'slip_number.unique' => 'এই ইস্যু স্লিপ নম্বরটি ইতিমধ্যেই ব্যবহার করা হয়েছে।',
-            'items.min' => 'দয়া করে অন্তত একটি কাঁচামাল যোগ করুন।',
+            'slip_number.unique' => 'This issue slip number already exists.',
+            'items.required' => 'At least one material item is required.',
         ]);
 
         DB::beginTransaction();
         try {
-            // 1️⃣ Production Issue তৈরি
+            // 1️⃣ Production Issue Header তৈরি করা
             $productionIssue = ProductionIssue::create([
                 'issue_number' => $request->slip_number,
-                'issue_date' => $request->issue_date,
                 'factory_name' => $request->factory_name,
-                'user_id' => Auth::id(),
+                'issue_date' => $request->issue_date,
+                'user_id' => Auth::id(), 
                 'notes' => $request->notes,
             ]);
 
             $totalQuantity = 0;
             $totalCost = 0;
 
-            // 2️⃣ প্রতিটি আইটেমের জন্য লুপ
             foreach ($request->items as $item) {
-                $issuedQty = (float)$item['quantity'];
-                $unitCost = (float)$item['unit_price'];
-                $lineTotal = $issuedQty * $unitCost;
+                $issuedQty = $item['quantity'];
+                $unitCost = $item['unit_price'];
+                $lineTotal = round($issuedQty * $unitCost, 2);
 
-                // স্টক বের করা
-                $stock = RawMaterialStock::find($item['raw_material_stock_id']);
+                // 2️⃣ Raw Material Stock আপডেট করা (Stock Out)
+                $stock = RawMaterialStock::lockForUpdate()->find($item['raw_material_stock_id']);
 
-                // পর্যাপ্ত স্টক আছে কি না যাচাই
                 if (!$stock || $stock->stock_quantity < $issuedQty) {
                     DB::rollBack();
-                    return back()->withInput()->with('error', 'স্টক পর্যাপ্ত নেই। দয়া করে স্টক রিপোর্ট চেক করুন।');
+                    return back()->withInput()->with('error', 'Error: Insufficient stock for batch ' . ($stock ? $stock->batch_number : 'ID ' . $item['raw_material_stock_id']));
                 }
 
-                // স্টক থেকে quantity কমানো
-                $stock->decrement('stock_quantity', $issuedQty);
+                $stock->stock_quantity -= $issuedQty;
+                $stock->save();
 
-                // Production Issue Item তৈরি
+                // 3️⃣ Production Issue Item তৈরি করা
                 ProductionIssueItem::create([
                     'production_issue_id' => $productionIssue->id,
                     'raw_material_id' => $item['raw_material_id'],
                     'raw_material_stock_id' => $item['raw_material_stock_id'],
-                    'batch_number' => $item['batch_number'],
+                    'batch_number' => $item['batch_number'] ?? $stock->batch_number,
                     'quantity_issued' => $issuedQty,
                     'unit_cost' => $unitCost,
                     'total_cost' => $lineTotal,
@@ -131,7 +123,7 @@ class RawMaterialStockOutController extends Controller
                 $totalCost += $lineTotal;
             }
 
-            // 3️⃣ মোট যোগফল আপডেট করা
+            // 4️⃣ মোট যোগফল আপডেট করা
             $productionIssue->update([
                 'total_quantity_issued' => $totalQuantity,
                 'total_issue_cost' => round($totalCost, 2),
@@ -165,7 +157,7 @@ class RawMaterialStockOutController extends Controller
             return redirect()->route('superadmin.raw-material-stock-out.index')
                              ->with('success', 'ইস্যু স্লিপটি ডিলিট করা হয়েছে।');
         } catch (\Exception $e) {
-            return back()->with('error', 'ইস্যু স্লিপটি ডিলিট করা সম্ভব হয়নি।');
+            return back()->with('error', 'ইস্যু স্লিপটি ডিলিট করা যায়নি: ' . $e->getMessage());
         }
     }
 }

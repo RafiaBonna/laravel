@@ -10,68 +10,115 @@
                 <div class="card-header">
                     <h3 class="card-title">New Sales Invoice (For Depo)</h3>
                 </div>
+                {{-- অ্যাকশন URLটি এখন superadmin/sales এ পয়েন্ট করবে --}}
                 <form action="{{ route('superadmin.sales.store') }}" method="POST">
                     @csrf
                     <div class="card-body">
 
-                        {{-- Depo Selection --}}
+                        {{-- Success/Error Messages --}}
+                        @if(session('success'))
+                            <div class="alert alert-success">{{ session('success') }}</div>
+                        @elseif(session('error'))
+                            <div class="alert alert-danger">{{ session('error') }}</div>
+                        @endif
+                        
+                        {{-- Validation Errors --}}
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                        
+                        {{-- Invoice Header Info --}}
                         <div class="form-group row">
                             <label for="depo_id" class="col-md-2 col-form-label">Select Depo <span class="text-danger">*</span></label>
-                            <div class="col-md-10">
+                            <div class="col-md-4">
                                 <select name="depo_id" id="depo_id" class="form-control" required>
                                     <option value="">Select a Depo</option>
                                     @foreach($depos as $depo)
-                                        <option value="{{ $depo->id }}">{{ $depo->name }}</option>
+                                        <option value="{{ $depo->id }}" {{ old('depo_id') == $depo->id ? 'selected' : '' }}>{{ $depo->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-
-                        {{-- Invoice Date --}}
-                        <div class="form-group row">
+                            
                             <label for="invoice_date" class="col-md-2 col-form-label">Invoice Date <span class="text-danger">*</span></label>
-                            <div class="col-md-10">
+                            <div class="col-md-4">
                                 <input type="date" name="invoice_date" id="invoice_date" class="form-control" value="{{ old('invoice_date', date('Y-m-d')) }}" required>
                             </div>
                         </div>
 
                         <hr>
-
-                        {{-- Product Table --}}
-                        <div class="row mb-3">
-                            <div class="col-12">
-                                <h5>Product Details</h5>
-                                <table class="table table-bordered" id="product_table">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 25%">Product Name</th>
-                                            <th style="width: 20%">Batch No.</th>
-                                            <th style="width: 15%">Available Stock</th>
-                                            <th style="width: 10%">Quantity <span class="text-danger">*</span></th>
-                                            <th style="width: 15%">Unit Price <span class="text-danger">*</span></th>
-                                            <th style="width: 10%">Sub Total</th>
-                                            <th style="width: 5%">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                       @include('superadmin.sales.partials.product_row', ['rowId' => 0, 'products' => $products])
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="5" class="text-right"><strong>Grand Total:</strong></td>
-                                            <td><input type="text" name="total_amount" id="grand_total" class="form-control" readonly value="0.00"></td>
-                                            <td></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                                <button type="button" id="add_row" class="btn btn-secondary btn-sm"><i class="fas fa-plus"></i> Add Another Product</button>
-                            </div>
+                        
+                        {{-- Product Item Table --}}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" id="product_table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 25%">Product <span class="text-danger">*</span></th>
+                                        <th style="width: 20%">Batch/Stock ID <span class="text-danger">*</span></th>
+                                        <th style="width: 10%">Available Stock</th>
+                                        <th style="width: 10%">Quantity <span class="text-danger">*</span></th>
+                                        <th style="width: 15%">Unit Price <span class="text-danger">*</span></th>
+                                        <th style="width: 15%">Sub Total</th>
+                                        <th style="width: 5%">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{-- Initial Row (row index 0) --}}
+                                    <tr>
+                                        <td>
+                                            <select name="items[0][product_id]" class="form-control product-select" required>
+                                                <option value="">Select Product</option>
+                                                @foreach($products as $product)
+                                                    <option value="{{ $product->id }}">{{ $product->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select name="items[0][product_stock_id]" class="form-control batch-select" required disabled>
+                                                <option value="">Select Product First</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            {{-- NOTE: name attribute removed to avoid confusion with form submission, readonly added --}}
+                                            <input type="text" class="form-control stock-available" readonly value="0"> 
+                                        </td>
+                                        <td>
+                                            <input type="number" name="items[0][quantity]" class="form-control quantity-input" min="1" required disabled value="1">
+                                        </td>
+                                        <td>
+                                            <input type="number" name="items[0][unit_price]" class="form-control price-input" step="0.01" min="0" required value="0.00">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="items[0][sub_total]" class="form-control sub-total" readonly value="0.00">
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-sm remove-row" disabled><i class="fas fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="5" class="text-right font-weight-bold">Grand Total:</td>
+                                        <td>
+                                            <input type="text" id="grand_total" class="form-control" readonly value="0.00">
+                                        </td>
+                                        <td>
+                                            <button type="button" id="add-row" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Add</button>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
                         </div>
 
-                        <div class="mt-4">
-                            <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save & Send for Approval</button>
-                            <a href="{{ route('superadmin.sales.index') }}" class="btn btn-default">Cancel</a>
-                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Create Invoice & Send for Approval</button>
                     </div>
                 </form>
             </div>
@@ -82,94 +129,112 @@
 
 @push('scripts')
 <script>
-$(document).ready(function() {
+// ✅ FIX: নিশ্চিত করা হলো যে jQuery এবং DOM পুরোপুরি লোড হওয়ার পরই কোড রান করবে
+$(function() { 
+    
     let row_count = 1;
 
+    // ----------------------------------------------------
+    // Core Logic: Load Batches and Auto-fill Stock/Price
+    // ----------------------------------------------------
+    
     function loadProductBatches(row) {
         let productId = row.find('.product-select').val();
         let batchSelect = row.find('.batch-select');
+        let stockInput = row.find('.stock-available');
         let priceInput = row.find('.price-input');
-        let quantityInput = row.find('.quantity-input');
-
-        batchSelect.empty().append('<option value="">Loading Batches...</option>');
-        priceInput.val('0.00');
-        quantityInput.val(1).prop('disabled', true);
+        let qtyInput = row.find('.quantity-input');
+        
+        // Reset fields
+        stockInput.val(0);
+        priceInput.val(0.00);
+        row.find('.sub-total').val(0.00);
+        qtyInput.prop('disabled', true).val(1); 
+        
+        batchSelect.prop('disabled', true).html('<option value="">Loading Batches...</option>');
 
         if (productId) {
-            let url = '{{ route('superadmin.sales.api.product-stock.batches', ['productId' => 'PRODUCT_ID']) }}'.replace('PRODUCT_ID', productId);
+            // ✅ FIX: সরাসরি URL Path ব্যবহার করা হলো
+            let url = `/superadmin/sales/api/product-stock/batches/${productId}`;
+            
+            console.log(`[DEBUG URL] Requesting: ${url}`);
+            
 
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(batches) {
-                    batchSelect.empty().append('<option value="">Select Batch</option>');
-                    if (batches.length > 0) {
-                        $.each(batches, function(i, batch) {
-                            batchSelect.append('<option value="'+batch.id+'" data-stock="'+batch.available_quantity+'" data-price="'+batch.unit_price+'">'+batch.batch_no+' (Stock: '+batch.available_quantity+')</option>');
-                        });
-                        batchSelect.prop('disabled', false);
-                    } else {
-                        batchSelect.append('<option value="">No Stock Available</option>').prop('disabled', true);
-                    }
-                },
-                error: function() {
-                    batchSelect.empty().append('<option value="">Error Loading Batches</option>').prop('disabled', true);
+            $.get(url, function(batches) {
+                console.log("[DEBUG SUCCESS] Batches received:", batches);
+
+                batchSelect.html('<option value="">Select Batch</option>');
+                
+                if (batches.length > 0) {
+                    
+                    // 1. Dropdown অপশন দিয়ে ফিল করা
+                    batches.forEach(function(batch) {
+                        batchSelect.append(`<option 
+                            value="${batch.id}" 
+                            data-available-stock="${batch.available_quantity}"
+                            data-unit-price="${batch.unit_price}"
+                        >Batch: ${batch.batch_no} (Stock: ${batch.available_quantity})</option>`);
+                    });
+
+                    // 2. প্রথম ব্যাচটির ডেটা সরাসরি নেওয়া
+                    const firstBatch = batches[0];
+                    const availableStock = firstBatch.available_quantity;
+                    const unitPrice = firstBatch.unit_price;
+
+                    // 3. ফিল্ডগুলো অটো-ফিল করা
+                    batchSelect.val(firstBatch.id); // প্রথম ব্যাচ সিলেক্ট করা হলো
+                    stockInput.val(availableStock);
+                    priceInput.val(unitPrice.toFixed(2));
+                    
+                    // 4. Quantity ফিল্ড এনাবল করা
+                    qtyInput.prop('disabled', false).val(1);
+                    batchSelect.prop('disabled', false);
+
+                    // Calculation (যদি Quantity 1 থাকে)
+                    const subTotal = 1 * unitPrice;
+                    row.find('.sub-total').val(subTotal.toFixed(2));
+                    
+                } else {
+                    batchSelect.html('<option value="">No Stock Available</option>');
                 }
+                
+                updateTotal(); // গ্র্যান্ড টোটাল আপডেট
+                
+            }).fail(function(xhr) {
+                console.error("[DEBUG FAIL] Failed to load batches. Status:", xhr.status, "Response:", xhr.responseText);
+                batchSelect.html('<option value="">Failed to load batches</option>');
+                updateTotal();
             });
         } else {
-            batchSelect.empty().append('<option value="">Select Product First</option>').prop('disabled', true);
+            batchSelect.prop('disabled', true).html('<option value="">Select Product First</option>');
+            updateTotal();
         }
     }
 
-    // Product change
+    // Product Select Change Event
     $(document).on('change', '.product-select', function() {
-        let row = $(this).closest('tr');
-        loadProductBatches(row);
-        row.find('.sub-total').val('0.00');
-        updateTotal();
+        loadProductBatches($(this).closest('tr'));
     });
-
-    // Batch change
+    
+    // Batch Select Change Event (If user manually selects another batch)
     $(document).on('change', '.batch-select', function() {
         let row = $(this).closest('tr');
         let selectedOption = $(this).find('option:selected');
-        let unitPrice = selectedOption.data('price') || 0;
-        let availableStock = selectedOption.data('stock') || 0;
+        
+        let availableStock = selectedOption.data('available-stock') || 0;
+        let unitPrice = selectedOption.data('unit-price') || 0.00;
 
-        row.find('.price-input').val(unitPrice.toFixed(2));
         row.find('.stock-available').val(availableStock);
-        row.find('.quantity-input').prop('disabled', false).val(1).trigger('input');
+        row.find('.price-input').val(unitPrice.toFixed(2));
+
+        row.find('.quantity-input').prop('disabled', false).val(1);
+        row.find('.quantity-input').trigger('input'); 
     });
 
-    // Add row
-    $('#add_row').click(function() {
-        let newRow = $(`  
-            <tr id="row_${row_count}">  
-                <td>
-                    <select name="items[${row_count}][product_id]" class="form-control product-select" required>
-                        <option value="">Select Product</option>
-                        @foreach($products as $product)
-                            <option value="{{ $product->id }}">{{ $product->name }}</option>
-                        @endforeach
-                    </select>
-                </td>
-                <td><select name="items[${row_count}][product_stock_id]" class="form-control batch-select" required disabled><option value="">Select Product First</option></select></td>
-                <td><input type="text" name="stock_available_${row_count}" class="form-control stock-available" readonly value="0"></td>
-                <td><input type="number" name="items[${row_count}][quantity]" class="form-control quantity-input" min="1" required disabled value="1"></td>
-                <td><input type="number" name="items[${row_count}][unit_price]" class="form-control price-input" step="0.01" min="0" required value="0.00"></td>
-                <td><input type="text" name="items[${row_count}][sub_total]" class="form-control sub-total" readonly value="0.00"></td>
-                <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i> Remove</button></td>
-            </tr>
-        `);
-        $('#product_table tbody').append(newRow);
-        row_count++;
-    });
 
-    // Remove row
-    $(document).on('click', '.remove-row', function() {
-        $(this).closest('tr').remove();
-        updateTotal();
-    });
+    // ----------------------------------------------------
+    // Calculation Logic
+    // ----------------------------------------------------
 
     // Quantity / Price change
     $(document).on('input', '.quantity-input, .price-input', function() {
@@ -179,6 +244,7 @@ $(document).ready(function() {
         let subTotal = quantity * price;
         let availableStock = parseFloat(row.find('.stock-available').val()) || 0;
 
+        // Stock Validation (if Quantity > Available Stock)
         if (quantity > availableStock) {
             alert(`Quantity cannot exceed available stock (${availableStock}).`);
             row.find('.quantity-input').val(availableStock);
@@ -199,7 +265,55 @@ $(document).ready(function() {
         $('#grand_total').val(grandTotal.toFixed(2));
     }
 
-    $('.product-select').first().trigger('change');
+
+    // ----------------------------------------------------
+    // Row Management
+    // ----------------------------------------------------
+    
+    // Add new row
+    $('#add-row').click(function() {
+        let newRow = $(`
+            <tr>
+                <td>
+                    <select name="items[${row_count}][product_id]" class="form-control product-select" required>
+                        <option value="">Select Product</option>
+                        @foreach($products as $product)
+                            <option value="{{ $product->id }}">{{ $product->name }}</option>
+                        @endforeach
+                    </select>
+                </td>
+                <td>
+                    <select name="items[${row_count}][product_stock_id]" class="form-control batch-select" required disabled>
+                        <option value="">Select Product First</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="form-control stock-available" readonly value="0">
+                </td>
+                <td>
+                    <input type="number" name="items[${row_count}][quantity]" class="form-control quantity-input" min="1" required disabled value="1">
+                </td>
+                <td>
+                    <input type="number" name="items[${row_count}][unit_price]" class="form-control price-input" step="0.01" min="0" required value="0.00">
+                </td>
+                <td>
+                    <input type="text" name="items[${row_count}][sub_total]" class="form-control sub-total" readonly value="0.00">
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i> Remove</button>
+                </td>
+            </tr>
+        `);
+        $('#product_table tbody').append(newRow);
+        row_count++;
+    });
+
+    // Remove row
+    $(document).on('click', '.remove-row', function() {
+        $(this).closest('tr').remove();
+        updateTotal();
+    });
+
     updateTotal(); 
 });
 </script>

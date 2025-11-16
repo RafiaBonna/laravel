@@ -140,7 +140,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (!materialId) return;
 
-            fetch(`/superadmin/api/raw-material-stock/batches/${materialId}`)
+            // ✅ FIX: 404 Error Fix - Using Laravel URL helper to prevent 404
+            fetch(`{{ url('superadmin/api/raw-material-stock/batches') }}/${materialId}`)
                 .then(res => res.json())
                 .then(batches => {
                     if (batches.length === 0) {

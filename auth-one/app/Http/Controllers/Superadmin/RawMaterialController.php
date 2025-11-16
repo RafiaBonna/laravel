@@ -78,4 +78,14 @@ class RawMaterialController extends Controller
             return back()->with('error', 'This raw material cannot be deleted as it is used in purchase or stock out records.');
         }
     }
+    
+    // ✅ FIX 7: To show Raw Material Stock Report (Stock Index)
+    public function stockIndex()
+    {
+        // View Path Updated: Stock Report-এর জন্য একটি আলাদা ভিউ ব্যবহার করা হলো।
+        // পরে আপনাকে resources/views/superadmin/raw_material_stock_out/stock_report.blade.php ফাইলটি তৈরি করতে হবে।
+        
+        // $stocks = \App\Models\RawMaterialStock::with('rawMaterial')->where('stock_quantity', '>', 0)->paginate(15);
+        return view('superadmin.raw_material_stock_out.stock_report'); 
+    }
 }

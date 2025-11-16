@@ -62,15 +62,15 @@ class WastageController extends Controller
 
             // 2. Create Wastage entry
             Wastage::create([
-                'wastage_date'          => $request->wastage_date,
-                'raw_material_id'       => $request->raw_material_id,
+                'wastage_date' => $request->wastage_date,
+                'raw_material_id' => $request->raw_material_id,
                 'raw_material_stock_id' => $request->raw_material_stock_id,
-                'batch_number'          => $stock->batch_number,
-                'quantity_wasted'       => $request->quantity_wasted,
-                'unit_cost'             => $unitCost,
-                'total_cost'            => round($totalCost, 2),
-                'reason'                => $request->reason,
-                'user_id'               => Auth::id(),
+                'batch_number' => $stock->batch_number,
+                'quantity_wasted' => $request->quantity_wasted,
+                'unit_cost' => $unitCost,
+                'total_cost' => round($totalCost, 2),
+                'reason' => $request->reason,
+                'user_id' => Auth::id(),
             ]);
 
             // 3. Update Raw Material Stock (Decrement quantity from stock)
@@ -104,8 +104,8 @@ class WastageController extends Controller
         try {
             // 1. Load Stock Batch
             $stock = RawMaterialStock::where('id', $wastage->raw_material_stock_id)
-                                    ->lockForUpdate() // Lock the row for safety
-                                    ->firstOrFail();
+                                     ->lockForUpdate() // Lock the row for safety
+                                     ->firstOrFail();
 
             // 2. Return Wastage Quantity to stock (Increment)
             $stock->increment('stock_quantity', $wastage->quantity_wasted);
@@ -125,12 +125,13 @@ class WastageController extends Controller
 
     // =======================================================
     // 💡 Function: For loading batches (AJAX ROUTE)
+    // ✅ FIX: Method name changed from getStockBatches to getRawMaterialBatches
     // =======================================================
 
     /**
      * 🔹 AJAX: Load Stock Batches for a specific Raw Material
      */
-    public function getStockBatches(int $rawMaterialId)
+    public function getRawMaterialBatches(int $rawMaterialId)
     {
         // Load batches where stock quantity is greater than 0.
         $batches = RawMaterialStock::where('raw_material_id', $rawMaterialId)
@@ -146,11 +147,12 @@ class WastageController extends Controller
         // Create a display label for each batch
         $response = $batches->map(function ($batch) {
             return [
-                'id'       => $batch->id,
+                'id'           => $batch->id,
                 'batch_number' => $batch->batch_number,
+                // সংখ্যাগুলো স্ট্রিং হিসেবে পাঠানো হচ্ছে যাতে জাভাস্ক্রিপ্টে ডেটা লস না হয়
                 'stock_quantity' => number_format($batch->stock_quantity, 2, '.', ''), 
-                'unit_cost' => number_format($batch->average_purchase_price, 4, '.', ''), 
-                'text'     => "Batch: {$batch->batch_number} (Qty: " . number_format($batch->stock_quantity, 2) . ")",
+                'unit_cost'    => number_format($batch->average_purchase_price, 4, '.', ''), 
+                'text'         => "Batch: {$batch->batch_number} (Qty: " . number_format($batch->stock_quantity, 2) . ")",
             ];
         });
 

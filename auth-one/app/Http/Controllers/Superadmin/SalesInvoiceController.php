@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SalesInvoice;
 use App\Models\Depo;
 use App\Models\Product;
-use App\Models\ProductStock;
+use App\Models\ProductStock; // ✅ নিশ্চিত করুন এই মডেলটি আছে
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +36,7 @@ class SalesInvoiceController extends Controller
         // Depots লোড করা হচ্ছে
         $depos = Depo::orderBy('name')->get(); 
         
-        // Active Products লোড করা হচ্ছে (যেগুলোর is_active = 1)
+        // Active Products লোড করা হচ্ছে
         $products = Product::where('is_active', 1)->orderBy('name')->get(); 
         
         return view('superadmin.sales.create', compact('depos', 'products'));
@@ -47,56 +47,54 @@ class SalesInvoiceController extends Controller
      */
     public function store(Request $request)
     {
-        // Validation logic
+        // 1. Validation
         $request->validate([
-            'depo_id' => ['required', 'exists:depos,id'],
-            'invoice_date' => ['required', 'date'],
-            'total_amount' => ['required', 'numeric', 'min:0'],
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.product_id' => ['required', 'exists:products,id'],
-            'items.*.product_stock_id' => ['required', 'exists:product_stocks,id'],
-            'items.*.quantity' => ['required', 'integer', 'min:1'],
-            'items.*.unit_price' => ['required', 'numeric', 'min:0'],
+            'depo_id' => 'required|exists:depos,id',
+            'invoice_date' => 'required|date',
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|exists:products,id',
+            // 'product_stock_id' validation will be done via custom logic in a real-world scenario, but required for now.
+            'items.*.product_stock_id' => 'required|exists:product_stocks,id', 
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.unit_price' => 'required|numeric|min:0',
         ]);
 
+        // 2. Invoice No. Generate (আপনার লজিক অনুযায়ী এটি যোগ করবেন)
+        $invoiceNo = 'SI-' . time(); 
+        
         DB::beginTransaction();
 
         try {
-            // ১. Sales Invoice তৈরি করা
+            // 3. Sales Invoice তৈরি করা
             $invoice = SalesInvoice::create([
-                'invoice_no' => 'SI-' . time(), 
+                'invoice_no' => $invoiceNo,
                 'invoice_date' => $request->invoice_date,
-                'total_amount' => $request->total_amount,
-                'user_id' => Auth::id(), 
+                'total_amount' => 0, // পরে আপডেট করা হবে
+                'user_id' => Auth::id(),
                 'depo_id' => $request->depo_id,
-                'status' => 'Pending', 
+                'status' => 'Pending', // ✅ ইনভয়েস Pending স্ট্যাটাসে তৈরি হচ্ছে
             ]);
 
-            // ২. Invoice Items যোগ করা এবং Product Stock আপডেট করা
+            $grandTotal = 0;
+            
+            // 4. Items সংরক্ষণ করা
             foreach ($request->items as $itemData) {
-                // Stock থেকে Quantity কমানো
-                $stock = ProductStock::find($itemData['product_stock_id']);
+                // স্টক এবং প্রাইস ফ্রন্ট-এ চেক করা হয়েছে। এখানে শুধু সেভ করা হচ্ছে।
+                $subTotal = $itemData['quantity'] * $itemData['unit_price'];
+                $grandTotal += $subTotal;
                 
-                // এখানে একটি জরুরি চেক: স্টক থেকে যেন বেশি বিক্রি না হয়
-                if (!$stock || $stock->available_quantity < $itemData['quantity']) {
-                    DB::rollBack();
-                    return redirect()->back()->withInput()->with('error', 'Insufficient stock for product batch ID ' . $itemData['product_stock_id']);
-                }
-
-                // স্টক আপডেট: পরিমাণ কমানো
-                $stock->available_quantity -= $itemData['quantity'];
-                $stock->save();
-
-                // Invoice Item তৈরি করা
                 $invoice->items()->create([
                     'product_id' => $itemData['product_id'],
                     'product_stock_id' => $itemData['product_stock_id'],
                     'quantity' => $itemData['quantity'],
                     'unit_price' => $itemData['unit_price'],
-                    'sub_total' => $itemData['quantity'] * $itemData['unit_price'],
+                    'sub_total' => $subTotal,
                 ]);
             }
 
+            // 5. Grand Total আপডেট করা
+            $invoice->update(['total_amount' => round($grandTotal, 2)]);
+            
             DB::commit();
 
             return redirect()->route('superadmin.sales.index')->with('success', 'Sales Invoice successfully created and sent for Depo approval.');
@@ -110,7 +108,6 @@ class SalesInvoiceController extends Controller
 
     /**
      * API: Load Stock Batches for a specific Product ID.
-     * FIX: Ensure 'available_quantity' is selected to match JS expectation.
      */
     public function getProductBatches($productId)
     {

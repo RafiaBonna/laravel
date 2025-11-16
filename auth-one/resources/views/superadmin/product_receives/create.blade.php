@@ -1,7 +1,6 @@
 {{-- resources/views/superadmin/product_receives/create.blade.php --}}
 
 @extends('master') 
-{{-- ধরে নিলাম আপনার master layout ফাইলটি 'master.blade.php' --}}
 
 @section('content')
 <div class="container-fluid">
@@ -31,59 +30,80 @@
                                 @error('receive_date') <span class="invalid-feedback">{{ $message }}</span> @enderror
                             </div>
                             <div class="col-md-6 form-group">
-                                <label for="note">Note / Remarks</label>
-                                <input type="text" name="note" id="note" class="form-control" 
-                                       value="{{ old('note') }}" placeholder="Any special note for this receive">
+                                <label for="note">Note (Optional)</label>
+                                <input type="text" name="note" id="note" class="form-control @error('note') is-invalid @enderror" 
+                                       value="{{ old('note') }}" placeholder="Any relevant notes">
+                                @error('note') <span class="invalid-feedback">{{ $message }}</span> @enderror
                             </div>
                         </div>
-                        
-                        <hr>
-                        
-                        {{-- Item Details Section --}}
+
+                        {{-- Item Details Table --}}
+                        <h5 class="mt-4 mb-3">Product Details</h5>
                         <div class="row">
-                            <div class="col-12">
-                                <h4>Product Details</h4>
-                                
-                                {{-- Add New Item Button --}}
-                                <button type="button" id="addNewItem" class="btn btn-sm btn-success mb-2">
-                                    <i class="fas fa-plus"></i> Add New Item
-                                </button>
-                                
-                                <table class="table table-bordered table-striped" id="productReceiveTable">
+                            <div class="col-12 table-responsive">
+                                <table class="table table-bordered table-sm table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Product Name <span class="text-danger">*</span></th>
-                                            <th style="width: 100px;">Batch No <span class="text-danger">*</span></th>
-                                            <th style="width: 80px;">Qty <span class="text-danger">*</span></th>
-                                            <th style="width: 80px;">MRP</th>
-                                            <th style="width: 80px;">Retail</th>
-                                            <th style="width: 80px;">Distributor</th>
-                                            <th style="width: 80px;">Depo</th>
+                                            <th>Product <span class="text-danger">*</span></th>
+                                            <th>Batch No <span class="text-danger">*</span></th>
+                                            <th style="width: 100px;">Quantity <span class="text-danger">*</span></th>
+                                            <th class="text-right">MRP</th>
+                                            <th class="text-right">Retail</th>
+                                            <th class="text-right">Distributor</th>
+                                            <th class="text-right">Depo Selling</th>
                                             <th style="width: 100px;">Cost Rate <span class="text-danger">*</span></th>
-                                            <th style="width: 110px;">Production Date</th>
-                                            <th style="width: 110px;">Expiry Date</th>
+                                            <th style="width: 120px;">Production Date</th>
+                                            <th style="width: 120px;">Expiry Date</th>
                                             <th style="width: 50px;">Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="productReceiveTableBody">
-                                        {{-- Initial Row (Index 0) --}}
-                                        @include('superadmin.product_receives.partials.receive_item_row', ['i' => 0, 'products' => $products])
+                                    <tbody id="item-table-body">
+                                        {{-- Initial Row --}}
+                                        @include('superadmin.product_receives.partials.receive_item_row', ['i' => 0])
+                                        
+                                        {{-- If validation failed, load old data --}}
+                                        @if(old('items'))
+                                            @foreach(old('items') as $index => $item)
+                                                {{-- Skip the initial row (index 0) which is already included --}}
+                                                @if($index > 0)
+                                                    @include('superadmin.product_receives.partials.receive_item_row', ['i' => $index, 'itemData' => $item])
+                                                @endif
+                                            @endforeach
+                                        @endif
                                     </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="11" class="text-right">
+                                                <button type="button" id="addNewItem" class="btn btn-sm btn-success">
+                                                    <i class="fas fa-plus"></i> Add New Item
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
-                                
-                                @error('items')
-                                    <div class="text-danger mt-2">At least one product item is required.</div>
-                                @enderror
-
                             </div>
                         </div>
-                        
+
+                        {{-- Total Quantity Display (Fixed as per requirement, shows Total Received Quantity) --}}
+                        <div class="row mt-3">
+                            <div class="col-md-3 ml-auto">
+                                <div class="form-group">
+                                    <label for="total_received_qty">Total Received Quantity</label>
+                                    <input type="text" name="total_received_qty" id="total_received_qty" 
+                                           class="form-control text-right" 
+                                           value="{{ old('total_received_qty', '0.00') }}" readonly>
+                                    @error('total_received_qty') <span class="text-danger">{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
+                    
                     <div class="card-footer">
-                        <button type="submit" class="btn btn-primary">Save Product Receive</button>
-                        <a href="{{ route('superadmin.product-receives.index') }}" class="btn btn-default">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save Receive Entry</button>
                     </div>
                 </form>
+                {{-- Form শেষ --}}
             </div>
         </div>
     </div>
@@ -92,102 +112,114 @@
 
 @section('scripts')
 <script>
-    // itemIndex কে 0 বা old data-র সংখ্যার থেকে শুরু করা
-    let itemIndex = {{ old('items') ? count(old('items')) - 1 : 0 }};
-    
-    // Select2 ইনিশিয়ালাইজেশন ফাংশন (যা নতুন রো-এর জন্য ব্যবহার হবে)
+    // 1. Select2 Initialization Function
     function initializeSelect2(selector) {
         $(selector).select2({
-            theme: 'bootstrap4',
-            placeholder: "Select Product",
-            allowClear: true
+            placeholder: "Select a product",
+            allowClear: true,
+            theme: 'bootstrap4' 
         });
     }
 
-    // 🎯 নতুন রো যোগ করার ফাংশন (মাল্টি-প্রোডাক্ট অ্যাডের জন্য)
-    $('#addNewItem').on('click', function(e) {
-        e.preventDefault();
-        
-        // 1. itemIndex বাড়ানো হলো
-        itemIndex++; 
+    // 2. Row Remove Handler Function
+    function removeRowHandler() {
+        const rowId = $(this).data('row-id');
+        $(`#${rowId}`).remove();
+        updateGrandTotalQuantity(); // Row রিমুভ করার পর টোটাল আপডেট করা
+    }
 
-        // 2. AJAX কল করে সার্ভার থেকে রো কন্টেন্ট আনা হলো 
+    // 3. Product Select Change Handler Function (Rates Fetch)
+    function productSelectChangeHandler() {
+        const productId = $(this).val();
+        const rowId = $(this).data('id');
+        
+        // যদি প্রোডাক্ট সিলেক্ট করা না হয়, রেট শূন্য করে রিটার্ন করা
+        if (!productId) {
+            $(`.mrp-rate-${rowId}, .retail-rate-${rowId}, .distributor-rate-${rowId}, .depo-selling-price-${rowId}`).val('0.00');
+            return;
+        }
+
+        // ✅ আপনার API Route টি ব্যবহার করে রেট আনা হলো
+        const url = '{{ route('superadmin.api.products.rates', ':id') }}';
+        const finalUrl = url.replace(':id', productId);
+
         $.ajax({
-            url: '{{ route('superadmin.product-receives.get-item-row') }}', 
+            url: finalUrl,
             type: 'GET',
-            data: { i: itemIndex }, // নতুন রো এর Index পাঠানো হলো
-            success: function(html) {
-                $('#productReceiveTableBody').append(html);
-                
-                // 3. নতুন রো-এর জন্য Select2 ইনিশিয়ালাইজ করা
-                initializeSelect2(`#row${itemIndex} .product-select`); 
+            success: function(data) {
+                // রেটগুলো অটো-ফিল করা
+                $(`.mrp-rate-${rowId}`).val(parseFloat(data.mrp || 0).toFixed(2));
+                $(`.retail-rate-${rowId}`).val(parseFloat(data.retail_rate || 0).toFixed(2));
+                $(`.distributor-rate-${rowId}`).val(parseFloat(data.distributor_rate || 0).toFixed(2));
+                $(`.depo-selling-price-${rowId}`).val(parseFloat(data.depo_selling_price || 0).toFixed(2));
             },
             error: function(xhr, status, error) {
-                console.error("Error fetching item row:", error);
-                alert("Could not add new item row. Please check the console.");
+                console.error("Error fetching product rates:", error);
+            }
+        });
+    }
+    
+    // 4. Total Quantity Update Function
+    function updateGrandTotalQuantity() {
+        let totalQty = 0;
+        
+        $('.received-qty').each(function() {
+            let qty = parseFloat($(this).val()) || 0;
+            totalQty += qty;
+        });
+        
+        $('#total_received_qty').val(totalQty.toFixed(2));
+    }
+
+
+    // 5. Add New Item Logic (Fixed)
+    let itemIndex = {{ count(old('items', [0])) }}; 
+
+    $('#addNewItem').on('click', function(e) {
+        e.preventDefault();
+        itemIndex++; 
+
+        $.ajax({
+            url: '{{ route('superadmin.product-receives.get-item-row') }}',
+            type: 'GET',
+            data: { i: itemIndex }, // নতুন Index পাঠানো হলো
+            success: function(data) {
+                $('#item-table-body').append(data); 
+                
+                // নতুন রো-এর জন্য ইভেন্ট হ্যান্ডলার সংযুক্ত করা
+                initializeSelect2(`#row${itemIndex} .product-select`);
+                $(`#row${itemIndex}`).find('.remove-row').on('click', removeRowHandler);
+                $(`#row${itemIndex} .product-select`).on('change', productSelectChangeHandler);
+                $(`#row${itemIndex} .received-qty`).on('input', updateGrandTotalQuantity);
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching new item row:", error);
+                alert('Failed to load new item row. Check console for details.');
+                itemIndex--; 
             }
         });
     });
-
-    // 4. ✅ ফিক্সড ডিলিট বাটন লজিক
-    $(document).on('click', '.remove-row', function(e) {
-        e.preventDefault();
-        // নিশ্চিত করুন অন্তত একটি রো থাকে
-        if ($('#productReceiveTableBody tr').length > 1) {
-             // ক্লিক করা বাটনটির নিকটতম <tr> ট্যাগটি ডিলিট করা
-             $(this).closest('tr').remove();
-        } else {
-            alert("You must have at least one item.");
-        }
-    });
-
-    // 5. রেট অটো-ফিল করার লজিক (Product Select Change Event)
-    $(document).on('change', '.product-select', function() {
-        const rowId = $(this).data('id'); 
-        const productId = $(this).val(); 
-
-        // রেট ফিল্ডগুলো ডিফল্ট 0.00 করা হলো
-        $(`.mrp-rate-${rowId}`).val('0.00');
-        $(`.retail-rate-${rowId}`).val('0.00');
-        $(`.distributor-rate-${rowId}`).val('0.00');
-        $(`.depo-selling-price-${rowId}`).val('0.00');
-
-        if (productId) {
-            // Route URL টি ব্যবহার করে
-            const url = '{{ route('superadmin.api.products.rates', ':id') }}';
-            const finalUrl = url.replace(':id', productId);
-
-            $.ajax({
-                url: finalUrl,
-                type: 'GET',
-                success: function(data) {
-                    // রেটগুলো অটো-ফিল করা
-                    $(`.mrp-rate-${rowId}`).val(parseFloat(data.mrp).toFixed(2));
-                    $(`.retail-rate-${rowId}`).val(parseFloat(data.retail_rate).toFixed(2));
-                    $(`.distributor-rate-${rowId}`).val(parseFloat(data.distributor_rate).toFixed(2));
-                    $(`.depo-selling-price-${rowId}`).val(parseFloat(data.depo_selling_price).toFixed(2));
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching product rates:", error);
-                }
-            });
-        }
-    });
     
-    // 6. ইনিশিয়াল লোডের জন্য Select2 ট্রিগার করা
+    // 6. ইনিশিয়াল লোডের জন্য এবং ইভেন্ট সংযুক্ত করা (DOM Ready)
     $(document).ready(function() {
         // প্রথম লোডে থাকা রো-এর জন্য Select2 চালু করা
         initializeSelect2('.product-select');
         
-        // যদি old data থাকে, তবে রেটগুলো ট্রিগার করা
+        // বিদ্যমান Row গুলোর জন্য ইভেন্ট হ্যান্ডলার সংযুক্ত করা
+        $('.remove-row').on('click', removeRowHandler);
+        $('.product-select').on('change', productSelectChangeHandler);
+        $('.received-qty').on('input', updateGrandTotalQuantity);
+        
+        // যদি old data থাকে, তবে রেটগুলো ট্রিগার করা এবং টোটাল আপডেট করা
         @if(old('items'))
-            // প্রতিটি বিদ্যমান রো-এর জন্য রেট ট্রিগার করা
             $('.product-select').each(function() {
                 if ($(this).val()) {
                     $(this).trigger('change');
                 }
             });
+            updateGrandTotalQuantity();
         @endif
+        
     });
 </script>
 @endsection

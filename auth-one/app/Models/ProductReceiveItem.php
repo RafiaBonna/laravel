@@ -1,7 +1,5 @@
 <?php
 
-// app/Models/ProductReceiveItem.php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,17 +20,17 @@ class ProductReceiveItem extends Model
         'cost_rate',
     ];
 
-    /**
-     * এই আইটেমটি কোন প্রোডাক্ট রিসিভের অংশ।
-     */
+    // ✅ Casts: নিশ্চিত float type
+    protected $casts = [
+        'received_quantity' => 'float',
+        'cost_rate' => 'float',
+    ];
+
     public function receive(): BelongsTo
     {
         return $this->belongsTo(ProductReceive::class);
     }
 
-    /**
-     * এই আইটেমটি কোন প্রোডাক্ট।
-     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
