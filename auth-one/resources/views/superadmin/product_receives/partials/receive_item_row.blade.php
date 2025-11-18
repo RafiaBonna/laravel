@@ -1,77 +1,58 @@
 {{-- resources/views/superadmin/product_receives/partials/receive_item_row.blade.php --}}
-
-@php
-    // $i হল Row Index
-    // $products হল কন্ট্রোলার থেকে আসা প্রোডাক্টের তালিকা
-    $itemData = old('items.' . $i, []);
-@endphp
-
-{{-- ✅ ফিক্স: শুধুমাত্র <tr> ট্যাগ দিয়ে শুরু করুন এবং বাইরে কোনো ট্যাগ রাখবেন না --}}
-<tr id="row{{ $i }}" data-item-id="{{ $i }}">
+<tr data-index="{{ $i }}">
+    {{-- Product Dropdown --}}
     <td>
-        {{-- Product Select --}}
-        <select name="items[{{ $i }}][product_id]" 
-                class="form-control product-select select2 @error('items.'.$i.'.product_id') is-invalid @enderror" 
-                data-id="{{ $i }}" 
-                required>
+        {{-- ✅ FIX: form-control ক্লাস যোগ করা হলো Select2 এর স্টাইল ঠিক করার জন্য --}}
+        <select name="items[{{ $i }}][product_id]" class="form-control form-control-sm select2 product-select @error("items.$i.product_id") is-invalid @enderror" required>
             <option value="">Select Product</option>
             @foreach($products as $id => $name)
-                <option value="{{ $id }}" {{ (isset($itemData['product_id']) && $itemData['product_id'] == $id) ? 'selected' : '' }}>
+                <option value="{{ $id }}" {{ old("items.$i.product_id", $oldItem['product_id'] ?? '') == $id ? 'selected' : '' }}>
                     {{ $name }}
                 </option>
             @endforeach
         </select>
-        @error('items.'.$i.'.product_id') <span class="invalid-feedback">{{ $message }}</span> @enderror
-    </td>
-    <td>
-        {{-- Batch No --}}
-        <input type="text" name="items[{{ $i }}][batch_no]" class="form-control @error('items.'.$i.'.batch_no') is-invalid @enderror" 
-               value="{{ $itemData['batch_no'] ?? '' }}" required placeholder="Batch No">
-        @error('items.'.$i.'.batch_no') <span class="invalid-feedback">N/A</span> @enderror
-    </td>
-    
-    {{-- Received Quantity --}}
-    <td>
-        <input type="number" name="items[{{ $i }}][received_quantity]" 
-               class="form-control received-qty @error('items.'.$i.'.received_quantity') is-invalid @enderror" 
-               value="{{ $itemData['received_quantity'] ?? '0.00' }}" min="0.01" step="any" required placeholder="Quantity">
-        @error('items.'.$i.'.received_quantity') <span class="invalid-feedback">{{ $message }}</span> @enderror
-    </td>
-    
-    {{-- Rate Fields (Readonly for reference) --}}
-    <td class="text-right"><input type="number" class="form-control mrp-rate-{{ $i }} text-right" value="0.00" readonly></td>
-    <td class="text-right"><input type="number" class="form-control retail-rate-{{ $i }} text-right" value="0.00" readonly></td>
-    <td class="text-right"><input type="number" class="form-control distributor-rate-{{ $i }} text-right" value="0.00" readonly></td>
-    <td class="text-right"><input type="number" class="form-control depo-selling-price-{{ $i }} text-right" value="0.00" readonly></td>
-
-    {{-- ✅ Cost Rate Field (Required) --}}
-    <td>
-        <input type="number" name="items[{{ $i }}][cost_rate]" 
-               class="form-control cost-rate @error('items.'.$i.'.cost_rate') is-invalid @enderror" 
-               value="{{ $itemData['cost_rate'] ?? '0.00' }}" min="0.00" step="any" required placeholder="Cost Rate">
-        @error('items.'.$i.'.cost_rate') <span class="invalid-feedback">{{ $message }}</span> @enderror
+        @error("items.$i.product_id")<small class="text-danger">{{ $message }}</small>@enderror
     </td>
 
-    {{-- Production and Expiry Date --}}
+    {{-- Batch No --}}
     <td>
-        <input type="date" name="items[{{ $i }}][production_date]" class="form-control" 
-               value="{{ $itemData['production_date'] ?? '' }}">
+        <input type="text" name="items[{{ $i }}][batch_no]" class="form-control form-control-sm @error("items.$i.batch_no") is-invalid @enderror"
+               value="{{ old("items.$i.batch_no", $oldItem['batch_no'] ?? '') }}" required>
+        @error("items.$i.batch_no")<small class="text-danger">{{ $message }}</small>@enderror
     </td>
+
+    {{-- Quantity --}}
     <td>
-        <input type="date" name="items[{{ $i }}][expiry_date]" class="form-control" 
-               value="{{ $itemData['expiry_date'] ?? '' }}">
+        <input type="number" name="items[{{ $i }}][received_quantity]" class="form-control form-control-sm text-right qty @error("items.$i.received_quantity") is-invalid @enderror"
+               value="{{ old("items.$i.received_quantity", $oldItem['received_quantity'] ?? 0) }}" min="0.01" step="0.01" required>
+        @error("items.$i.received_quantity")<small class="text-danger">{{ $message }}</small>@enderror
+    </td>
+
+    {{-- Cost Rate (Unit Stock) --}}
+    <td>
+        <input type="number" name="items[{{ $i }}][cost_rate]" class="form-control form-control-sm text-right cost-rate @error("items.$i.cost_rate") is-invalid @enderror"
+               value="{{ old("items.$i.cost_rate", $oldItem['cost_rate'] ?? 0) }}" min="0" step="0.01" required>
+        @error("items.$i.cost_rate")<small class="text-danger">{{ $message }}</small>@enderror
     </td>
     
-    {{-- ✅ অ্যাকশন বাটন --}}
+    {{-- Total Item Cost (Hidden field for Calculation) --}}
     <td>
-        {{-- ডিলিট বাটন (যদি রো-এর ইন্ডেক্স 0 এর বেশি হয় তবেই ডিলিট করা যাবে) --}}
-        @if($i > 0)
-        <button type="button" class="btn btn-danger btn-sm remove-row" title="Remove Item" data-row-id="row{{ $i }}">
+        <input type="text" name="items[{{ $i }}][total_item_cost]" class="form-control form-control-sm text-right total-cost-item bg-light"
+               value="{{ old("items.$i.total_item_cost", $oldItem['total_item_cost'] ?? 0.00) }}" readonly required>
+        @error("items.$i.total_item_cost")<small class="text-danger">Total Cost Required</small>@enderror
+    </td>
+
+    {{-- Expiry Date --}}
+    <td>
+        <input type="date" name="items[{{ $i }}][expiry_date]" class="form-control form-control-sm @error("items.$i.expiry_date") is-invalid @enderror"
+               value="{{ old("items.$i.expiry_date", $oldItem['expiry_date'] ?? '') }}" required>
+        @error("items.$i.expiry_date")<small class="text-danger">{{ $message }}</small>@enderror
+    </td>
+    
+    {{-- Action Button --}}
+    <td class="text-center">
+        <button type="button" class="btn btn-xs btn-danger removeItemRow" title="Remove Item">
             <i class="fas fa-times"></i>
         </button>
-        @else
-        <button type="button" class="btn btn-secondary btn-sm" disabled><i class="fas fa-times"></i></button>
-        @endif
     </td>
-</tr> 
-{{-- ✅ ফিক্স: শুধুমাত্র </tr> ট্যাগ দিয়ে শেষ করুন --}}
+</tr>

@@ -2,14 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductReceiveItem extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'product_receive_id',
         'product_id',
@@ -18,20 +14,15 @@ class ProductReceiveItem extends Model
         'expiry_date',
         'received_quantity',
         'cost_rate',
+        'total_item_cost'
     ];
 
-    // ✅ Casts: নিশ্চিত float type
-    protected $casts = [
-        'received_quantity' => 'float',
-        'cost_rate' => 'float',
-    ];
-
-    public function receive(): BelongsTo
+    public function receive()
     {
         return $this->belongsTo(ProductReceive::class);
     }
 
-    public function product(): BelongsTo
+    public function product()
     {
         return $this->belongsTo(Product::class);
     }

@@ -141,48 +141,7 @@
                                 </a>
                             </li>
 
-                            {{-- 3. SALES MANAGEMENT --}}
-                            <li class="nav-item has-treeview {{ request()->routeIs('superadmin.sales.*') ? 'menu-open' : '' }}">
-                                <a href="#" class="nav-link {{ request()->routeIs('superadmin.sales.*') ? 'active' : '' }}">
-                                    <i class="far fa-dot-circle nav-icon"></i>
-                                    <p>
-                                        Sales to Depo (Out)
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ route('superadmin.sales.index') }}" class="nav-link {{ request()->routeIs('superadmin.sales.index') ? 'active' : '' }}">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Sales Invoice List</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('superadmin.sales.create') }}" class="nav-link {{ request()->routeIs('superadmin.sales.create') ? 'active' : '' }}">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Create New Invoice</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-
-                            {{-- 4. Product Return --}}
-                            <li class="nav-item">
-                                <a href="#" class="nav-link {{ request()->routeIs('superadmin.product-returns.*') ? 'active' : '' }}">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Product Return List</p>
-                                </a>
-                            </li>
-                            {{-- 5. Product Wastage --}}
-                            <li class="nav-item">
-                                <a href="#" class="nav-link {{ request()->routeIs('superadmin.product-wastage.*') ? 'active' : '' }}">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Wastage List / Entry</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-
+                            
                     {{-- Settings Section (Treeview) --}}
                     <?php
                         $settingsRoutes = ['superadmin.suppliers.*', 'superadmin.depo.index', 'superadmin.distributor.*'];
