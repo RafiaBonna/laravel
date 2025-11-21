@@ -39,7 +39,7 @@
                             <strong>{{ $post->title }}</strong>
                         </div>
                         <span class="badge bg-dark">
-                            Posted by: {{ $post->user->name ?? 'Unknown User' }}
+                            Posted by : {{ $post->user->name ?? 'Unknown User' }}
                         </span>
                     </div>
                 @empty
