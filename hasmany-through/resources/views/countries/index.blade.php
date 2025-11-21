@@ -10,7 +10,7 @@
         body { background-color: #f4f6f9; }
         .container { 
             max-width: 900px; 
-            margin-top: 30px; 
+            margin-top: 40px; 
         }
     </style>
 </head>
