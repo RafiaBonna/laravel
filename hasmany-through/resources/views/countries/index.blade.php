@@ -9,7 +9,7 @@
     <style>
         body { background-color: #f4f6f9; }
         .container { 
-            max-width: 900px; 
+            max-width: 800px; 
             margin-top: 40px; 
         }
     </style>
