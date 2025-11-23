@@ -8,7 +8,7 @@
 </head>
 <body>
 <div class="text-center mt-5">
-    <h1>Relationship -> Many to Many (Subject & Students)</h1>
+    <h1>Relationship  Many to Many (Subject & Students)</h1>
     <br>
     <a href="/enroll"> 
       <button class="btn btn-md btn-success"> Create</button>
