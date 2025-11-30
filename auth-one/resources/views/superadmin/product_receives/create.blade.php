@@ -4,7 +4,7 @@
 <div class="content-wrapper p-4">
 
     <div class="mb-3">
-        <h3>Create Product Receive</h3>
+        <h3>Create Product Receives</h3>
     </div>
 
     <form action="{{ route('superadmin.product-receives.store') }}" method="POST">
