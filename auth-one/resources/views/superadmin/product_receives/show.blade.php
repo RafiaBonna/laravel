@@ -47,7 +47,7 @@
             <table class="table table-bordered">
                 <thead class="bg-dark text-white">
                     <tr>
-                        <th>#</th>
+                        <th>Id</th>
                         <th>Product</th>
                         <th>Qty</th>
                         <th>Unit Cost</th>
