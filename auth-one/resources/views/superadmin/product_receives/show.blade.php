@@ -51,7 +51,7 @@
                         <th>Product</th>
                         <th>Quantity</th>
                         <th>Unit Cost</th>
-                        <th>Subtotal</th>
+                        <th>Sub total</th>
                     </tr>
                 </thead>
 
