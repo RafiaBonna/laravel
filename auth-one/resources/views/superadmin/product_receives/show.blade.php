@@ -49,7 +49,7 @@
                     <tr>
                         <th>Id</th>
                         <th>Product</th>
-                        <th>Qty</th>
+                        <th>Quantity</th>
                         <th>Unit Cost</th>
                         <th>Subtotal</th>
                     </tr>
