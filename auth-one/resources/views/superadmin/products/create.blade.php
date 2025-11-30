@@ -124,7 +124,7 @@
                         
                         {{-- Description --}}
                         <div class="form-group">
-                            <label for="description">Description (Optional)</label>
+                            <label for="description">Description Optional</label>
                             <textarea name="description" id="description" class="form-control @error('description') is-invalid @enderror">{{ old('description') }}</textarea>
                              @error('description') 
                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span> 
