@@ -20,7 +20,7 @@
                     </div>
 
                     <div class="col-md-8">
-                        <label>Note</label>
+                        <label>Notes</label>
                         <input type="text" name="note" class="form-control">
                     </div>
                 </div>
