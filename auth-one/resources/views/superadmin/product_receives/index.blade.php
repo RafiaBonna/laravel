@@ -18,7 +18,7 @@
                     <tr>
                         <th>Receive No</th>
                         <th>Date</th>
-                        <th>Total Qty</th>
+                        <th>Total Quantity</th>
                         <th>Total Cost</th>
                         <th>Received By</th>
                         <th>Action</th>
