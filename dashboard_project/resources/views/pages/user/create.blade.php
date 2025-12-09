@@ -27,12 +27,12 @@
                         </div>
                         
                         <div class="mb-3 form-group">
-                            <label for="password" class="form-label">Password:</label>
+                            <label for="password" class="form-label">Password</label>
                             <input type="password" name="password" class="form-control" id="password" required >
                         </div>
                         
                         <div class="mb-3 form-group">
-                            <label for="role" class="form-label">Role:</label>
+                            <label for="role" class="form-label">Role</label>
                             <select name="role" id="role" class="form-control" required>
                                 <option value="depo" selected>Depo</option>
                                 <option value="distributor">Distributor</option>
