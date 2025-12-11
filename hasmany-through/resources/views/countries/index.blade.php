@@ -44,7 +44,7 @@
                     </div>
                 @empty
                     <div class="alert alert-warning">
-                        No posts found from users in {{ $country->name }}.
+                        No Posts found from users in {{ $country->name }}.
                     </div>
                 @endforelse
             </div>
