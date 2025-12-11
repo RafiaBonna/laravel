@@ -31,7 +31,7 @@
                 <h3 class="mb-0">Country: {{ $country->name }} (ID: {{ $country->id }})</h3>
             </div>
             <div class="card-body">
-                <h5 class="card-title text-secondary">Posts from this Country:</h5>
+                <h5 class="card-title text-secondary">Posts from This Country:</h5>
                 
                 @forelse ($country->posts as $post)
                     <div class="alert alert-info py-2 my-2 d-flex justify-content-between align-items-center">
