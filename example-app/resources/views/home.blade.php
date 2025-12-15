@@ -6,15 +6,6 @@
     <title>Document</title>
 </head>
 <body>
- <h1>I can do it.</h1>
- <h1>I can do it.</h1>
- <h1>I can do it.</h1>
- <h1>I can do it.</h1>
- <h1>I can do it.</h1>
- <h1>I can do it.</h1>
- <h1>I can do it.</h1>
- <h1>I can do it.</h1>
- <h1>I can do it.</h1>
- <h2></h2>   
+ <h1>I can do it.</h1>  
 </body>
 </html>
